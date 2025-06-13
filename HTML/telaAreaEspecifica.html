@@ -1,11 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AreaEspecifica</title>
+    <title>Área Específica</title>
+    <link rel="stylesheet" href="../CSS/style.css">
 </head>
 <body>
-    <h1>Essa é a tela da área específica</h1>
+    <div class="container"> <!-- Mesma situação da secretaria, coloquei tudo num container pra ser mais de boa de usar flex ou o que quiserem usar lá no css -->
+
+        <!-- Parte do cabeçalho -->
+        <div class="header">
+            <h1 class="faculdade">Faculdade Faculândia</h1v>
+            <h2>Área específica</h2>
+            <p class="nome-aluno">Nome</p>
+
+        </div>
+
+        <!-- Deslogar do usuário das áreas específicas -->
+        <div class="botoes">
+            <button class="btn" id="btnSair">Sair</button>
+        </div>
+
+
+        <!-- Aquela parte na esquerda onde ficarão os processos -->
+        <div class="secao">
+            <h4 class="titulo-secao">PROCESSOS PENDENTES</h4>
+            <p class="texto">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt.
+            </p>
+        </div>
+
+
+        <!-- Bagulho para escolher as opções -->
+        <div class="secao">
+            <select class="seletor" id="seletorOpcoes">
+                <option value="" selected disabled>SELECIONE UMA OPÇÃO</option>
+                <option value="aprovado">Aprovar</option>
+                <option value="reprovado">Reprovar</option>
+                <option value="analise">Solicitar ajustes</option>
+            </select>
+        </div>
+
+
+        <!-- Onde vai aparecer o texto do processo escolhido lá em cima -->
+        <div class="secao">
+            <div class="texto">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </div>
+        </div>
+
+        <!-- Botão pra eles devolverem pro aluno -->
+        <!-- É necessário depois adicionar uma função pra ele adicionar a assinatura ou se tiver assinatura automática, pra chamar a assinatura-->
+        <div class="botoes-acao">
+            <button class="btn btn-encaminhar" id="btnEmitirParecer">Emitir Parecer</button>
+        </div>
+    </div>
+
+    <script src="../JS/app.js"></script>
 </body>
 </html>
