@@ -1,39 +1,40 @@
 document.getElementById('loginForm').addEventListener('submit', function(event) {
-    
+
     // impedir que o site fique girando em círculos.
     event.preventDefault();
     
-    // Pra não ficar gigantesco o número de letras ali embaixo, isso daqui vai servir pra deixar tudo maiúsculo independente.
-    const username = document.getElementById('username').value.trim().toUpperCase();
+    // Come os espaços da matrícula pra não dar merda.
+    const matricula = document.getElementById('matricula').value.trim();
     
-    // Avisar que o usuário esqueceu de pôr o próprio nome no bagulho.
-    if (!username) {
-        alert('Por favor, insira um nome de usuário.');
+    // Se o mano esquecer de colocar o nome na matrícula.
+    if (!matricula) {
+        alert('Por favor, insira sua matrícula.');
         return;
     }
 
-    // Verificar só a primeira letra (também significa que nomes com uma letra só são possíveis, mas sei lá, meio tanto faz isso).
-    const firstLetter = username.charAt(0);
+    // Pega só dois primeiros dígitos da matrícula pra uma string pra verificar isso.
+    const doisPrimeirosDigitos = matricula.substring(0, 2);
+    // Transforma em número a string de cima.
+    const numeroMatricula = parseInt(doisPrimeirosDigitos);
     
+    // Se o usuário for burrinho e não saber o que é um número, isso daqui avisa.
+    if (isNaN(numeroMatricula)) {
+        alert('Matrícula inválida. Os dois primeiros dígitos devem ser números.');
+        return;
+    }
 
-    
-    // Isso daqui vai verificar a primeira letra.
-    // Se souberem alguma forma melhor de fazer isso, por favor me ajudem.
-
-    if ('ABCDEFG'.includes(firstLetter)) { // Manda pra tela do aluno.
+    // Verificar e encaminhar pro lugar certo
+    if (numeroMatricula >= 10 && numeroMatricula <= 40) { // Alunos: matrícula 10-40.
         window.location.href = 'telaAluno.html';
     } 
-    
-    else if ('HIJQLMNO'.includes(firstLetter)) { // Manda pra tela da secretaria.
+    else if (numeroMatricula >= 41 && numeroMatricula <= 70) { // Secretaria: matrícula 41-70
         window.location.href = 'telaSecretaria.html';
     } 
-    
-    else if ('PQRSTUVWXYZ'.includes(firstLetter)) { // Manda pra área específica.
+    else if (numeroMatricula >= 71 && numeroMatricula <= 99) { // Área Específica: matrícula 71-99
         window.location.href = 'telaAreaEspecifica.html';
-    } 
-
-    // Evitar a merda.
+    }
     else {
-        alert('Letra inicial não reconhecida.');
+        // Evitar a merda.
+        alert('Matrícula não está em nenhum intervalo válido (10-99).');
     }
 });
