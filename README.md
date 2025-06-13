@@ -12,7 +12,7 @@
     - [ ] Modal de edição do requerimento.
     - [ ] Modal do comprovante.
 - [ ] Criação do back-end.
-    - [x] Acessos para login.
+    - [x] Acessos para login. (feito através de matrícula nos intervalos 10-40, 41-70, 71-99)
     - [ ] Funcinalidades da tela do aluno.
     - [ ] Funcinalidades da tela dos funcionários.
     - [ ] Funcinalidades da tela das áreas específicas.
