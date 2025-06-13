@@ -3,6 +3,13 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     // impedir que o site fique girando em círculos.
     event.preventDefault();
     
+    // Verifica se o nome foi preenchido
+    const nome = document.getElementById('nome').value.trim();
+    if (!nome) {
+        alert('Por favor, insira seu nome completo.');
+        return;
+    }
+    
     // Come os espaços da matrícula pra não dar merda.
     const matricula = document.getElementById('matricula').value.trim();
     
