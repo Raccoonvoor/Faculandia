@@ -12,7 +12,7 @@
     - [ ] Modal de edição do requerimento.
     - [ ] Modal do comprovante.
 - [ ] Criação do back-end.
-    - [ ] Acessos para login.
+    - [x] Acessos para login.
     - [ ] Funcinalidades da tela do aluno.
     - [ ] Funcinalidades da tela dos funcionários.
     - [ ] Funcinalidades da tela das áreas específicas.
