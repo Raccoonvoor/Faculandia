@@ -30,6 +30,12 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         return;
     }
 
+    // Isso daqui vai verificar se é só números que o caba tá colocando e se são exatamente 8.
+    if (matricula.length !== 8 || !/^\d+$/.test(matricula)) {
+    alert('Matrícula deve ter 8 dígitos numéricos.');
+    return;
+    }
+
     // Verificar e encaminhar pro lugar certo
     if (numeroMatricula >= 10 && numeroMatricula <= 40) { // Alunos: matrícula 10-40.
         window.location.href = 'telaAluno.html';
