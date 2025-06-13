@@ -1,4 +1,5 @@
 # Faculândia
+Se quiser ler mais sobre, visite a (wiki)[https://github.com/Raccoonvoor/Faculandia/wiki].
 # Projeto de arquitetura de software - ADS
 
 ### Organização (sujeito à mudanças):
