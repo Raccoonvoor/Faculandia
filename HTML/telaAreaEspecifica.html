@@ -3,60 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área Específica</title>
-    <link rel="stylesheet" href="../CSS/style.css">
+    <title>Área Específica - Faculândia</title>
+    <link rel="stylesheet" href="../CSS/EstilosAreaEspecifica.css">
 </head>
 <body>
-    <div class="container"> <!-- Mesma situação da secretaria, coloquei tudo num container pra ser mais de boa de usar flex ou o que quiserem usar lá no css -->
-
-        <!-- Parte do cabeçalho -->
-        <div class="header">
-            <h1 class="faculdade">Faculdade Faculândia</h1v>
-            <h2>Área específica</h2>
-            <p class="nome-aluno">Nome</p>
-
+    <!-- Barra azul no topo -->
+    <header class="top-bar">
+        <div class="container">
+            <h1 class="faculdade">Faculdade Faculândia</h1>
+            <div class="user-area">
+                <span class="user-info">
+                    <span class="user-name" id="nomeUsuario"></span>
+                    <span class="separador">-</span>
+                    <span class="area-usuario" id="areaUsuario"></span>
+                </span>
+                <button class="btn-sair" id="btnSair">Sair</button>
+            </div>
         </div>
+    </header>
 
-        <!-- Deslogar do usuário das áreas específicas -->
-        <div class="botoes">
-            <button class="btn" id="btnSair">Sair</button>
-        </div>
+    <div class="main-container">
+        <!-- Seção de processos -->
+        <section class="secao-processos">
+            <h2 class="section-title">PROCESSOS NOVOS</h2>
+            
+            <div class="processo">
+                <div class="processo-conteudo">
+                    <p>Prezada Tesouraria,</p>
+                    <p>Gostaria de solicitar o parcelamento da mensalidade do mês de junho de 2025, por dificuldades financeiras.</p>
+                    <p>Aguardo informações sobre as opções disponíveis. Obrigado!</p>
+                    <p><strong>Nome:</strong> Lucas Ferreira</p>
+                    <p><strong>RA:</strong> 2022878816</p>
+                    <p><strong>Curso:</strong> Enfermagem</p>
+                </div>
+                <button class="btn-processo">Selecionar</button>
+            </div>
+            
+            <div class="processo">
+                <div class="processo-conteudo">
+                    <p>Olá,</p>
+                    <p>Gostaria de saber se há possibilidade de obter desconto por pagamento antecipado de todas as mensalidades do semestre.</p>
+                    <p>Caso haja essa política, solicito o valor atualizado para quitação.</p>
+                    <p><strong>Nome:</strong> Vanessa Moura</p>
+                    <p><strong>RA:</strong> 2022001145</p>
+                    <p><strong>Curso:</strong> Direito</p>
+                </div>
+                <button class="btn-processo">Selecionar</button>
+            </div>
+        </section>
 
-
-        <!-- Aquela parte na esquerda onde ficarão os processos -->
-        <div class="secao">
-            <h4 class="titulo-secao">PROCESSOS PENDENTES</h4>
-            <p class="texto">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt.
-            </p>
-        </div>
-
-
-        <!-- Bagulho para escolher as opções -->
-        <div class="secao">
+        <!-- Seção de parecer -->
+        <section class="secao-parecer">
+            <h2 class="section-title">EMITIR PARECER</h2>
+            
+            <div id="conteudoProcessoSelecionado">
+                <p vazio>Nenhum processo selecionado</p>
+            </div>
+            
             <select class="seletor" id="seletorOpcoes">
                 <option value="" selected disabled>SELECIONE UMA OPÇÃO</option>
                 <option value="aprovado">Aprovar</option>
                 <option value="reprovado">Reprovar</option>
-                <option value="analise">Solicitar ajustes</option>
+                <option value="ajustes">Solicitar ajustes</option>
             </select>
-        </div>
-
-
-        <!-- Onde vai aparecer o texto do processo escolhido lá em cima -->
-        <div class="secao">
-            <div class="texto">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            
+            <div class="botoes-acao">
+                <button class="btn btn-cancelar" id="btnDesselecionar">Desselecionar</button>
+                <button class="btn btn-encaminhar" id="btnEmitirParecer">Emitir Parecer</button>
             </div>
-        </div>
-
-        <!-- Botão pra eles devolverem pro aluno -->
-        <!-- É necessário depois adicionar uma função pra ele adicionar a assinatura ou se tiver assinatura automática, pra chamar a assinatura-->
-        <div class="botoes-acao">
-            <button class="btn btn-encaminhar" id="btnEmitirParecer">Emitir Parecer</button>
-        </div>
+        </section>
     </div>
 
-    <script src="../JS/app.js"></script>
+    <script src="../JS/AreaEspecifica.js"></script>
 </body>
 </html>

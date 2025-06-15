@@ -12,49 +12,59 @@
         <div class="container">
             <h1 class="faculdade">Faculdade Faculândia</h1>
             <div class="user-area">
-                <span class="user-name">Nome</span>
+                <span class="user-name" id="nomeUsuario">Nome</span>
                 <button class="btn-sair" id="btnSair">Sair</button>
             </div>
         </div>
     </header>
 
     <div class="main-container">
-        <!-- Seção de novo requerimento -->
+        <!-- Seção de requerimento -->
         <section class="requerimento-section">
             <h2 class="section-title">NOVO REQUERIMENTO</h2>
             
             <div class="content-wrapper">
-                <!-- Coluna esquerda -->
-                <div class="left-column">
-                    <div class="comprovante-box">
-                        <h3>Comprovante</h3>
-                    </div>
-                </div>
+                <!-- Coluna esquerda (vazia na imagem) -->
+                <div class="left-column"></div>
                 
-                <!-- Coluna central -->
+                <!-- Coluna central (descrição) -->
                 <div class="center-column">
-                    <div class="historico-box">
-                        <h3>HISTÓRICO</h3>
+                    <div class="descricao-box">
+                        <h3>DESCRIÇÃO</h3>
+                        <div class="descricao-conteudo">
+                            <p>Bom dia,</p>
+                            <p>Venho respeitosamente solicitar a isenção da multa por atraso da mensalidade do mês de maio, devido a problemas no acesso ao sistema.</p>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Coluna direita -->
+                <!-- Coluna direita (status) -->
                 <div class="right-column">
                     <button class="btn-editar">EDITAR</button>
                     
-                    <div class="descricao-box">
-                        <h3>DESCRIÇÃO</h3>
-                    </div>
-                    
                     <div class="status-box">
                         <h3>STATUS</h3>
-                        <div class="status-enviado">ENVIADO</div>
+                        <div class="status-item status-enviado">ENVIADO</div>
+                        <div class="status-item status-processado">PROCESSADO PELA SECRETARIA</div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
 
-    <script src="../JS/app.js"></script>
+    <!-- Modal de Edição (será mostrado ao clicar em EDITAR) -->
+    <div id="modalEdicao" class="modal">
+        <div class="modal-conteudo">
+            <h3>Editar Requerimento</h3>
+            <textarea id="textoRequerimento" rows="8">Bom dia,
+Venho respeitosamente solicitar a isenção da multa por atraso da mensalidade do mês de maio, devido a problemas no acesso ao sistema.</textarea>
+            <div class="modal-botoes">
+                <button id="btnCancelarEdicao" class="btn-cancelar">Cancelar</button>
+                <button id="btnSalvarEdicao" class="btn-salvar">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../JS/AlunoFuncional.js"></script>
 </body>
 </html>

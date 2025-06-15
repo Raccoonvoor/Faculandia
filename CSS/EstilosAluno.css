@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
 }
 
 /* Barra azul no topo */
@@ -10,6 +11,7 @@ body {
     background-color: #003366;
     color: white;
     padding: 15px 0;
+    width: 100%;
 }
 
 .top-bar .container {
@@ -24,6 +26,7 @@ body {
 .faculdade {
     margin: 0;
     font-size: 24px;
+    color: white;
 }
 
 .user-area {
@@ -34,6 +37,7 @@ body {
 
 .user-name {
     font-weight: bold;
+    color: white;
 }
 
 .btn-sair {
@@ -81,10 +85,7 @@ body {
 }
 
 /* Estilos das caixas de conteúdo */
-.comprovante-box, 
-.historico-box,
-.descricao-box,
-.status-box {
+.descricao-box, .status-box {
     background-color: #f8f9fa;
     padding: 15px;
     border-radius: 5px;
@@ -92,14 +93,18 @@ body {
     border: 1px solid #dee2e6;
 }
 
-.comprovante-box h3,
-.historico-box h3,
-.descricao-box h3,
-.status-box h3 {
+.descricao-box h3, .status-box h3 {
     color: #003366;
     margin-top: 0;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-size: 16px;
+    border-bottom: 1px solid #003366;
+    padding-bottom: 5px;
+}
+
+.descricao-conteudo p {
+    margin: 10px 0;
+    line-height: 1.5;
 }
 
 /* Botão Editar */
@@ -114,16 +119,90 @@ body {
     font-weight: bold;
     margin-bottom: 20px;
     width: 100%;
+    transition: background-color 0.3s;
+}
+
+.btn-editar:hover {
+    background-color: #002244;
 }
 
 /* Status */
-.status-enviado {
-    display: inline-block;
-    background-color: #28a745;
-    color: white;
+.status-item {
     padding: 8px 15px;
     border-radius: 4px;
     font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.status-enviado {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-processado {
+    background-color: #17a2b8;
+    color: white;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-conteudo {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.modal-conteudo h3 {
+    margin-top: 0;
+    color: #003366;
+}
+
+.modal-conteudo textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 15px 0;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.modal-botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancelar {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-salvar {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 /* Responsividade */
@@ -141,5 +220,9 @@ body {
     .user-area {
         width: 100%;
         justify-content: space-between;
+    }
+    
+    .modal-conteudo {
+        width: 90%;
     }
 }

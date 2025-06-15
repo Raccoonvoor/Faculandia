@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Salva o nome do aluno no localStorage antes de redirecionar
             localStorage.setItem('nomeAluno', nome);
+            // Adicione isso após validar o login
+            localStorage.setItem('matriculaAluno', matricula);
 
             // Verificar e encaminhar pro lugar certo
             if (numeroMatricula >= 10 && numeroMatricula <= 40) { // Alunos: matrícula 10-40.
