@@ -3,27 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tela de Login</title>
+    <title>Tela de login</title>
+    <link rel="stylesheet" href="../CSS/style.css">
 </head>
 <body>
-    
-    <h2>Login</h2>
-    <form id="loginForm">
-        <div>
-            <label for="nome">Nome:</label><br>
-            <input type="text" id="nome" name="nome" required placeholder="Digite seu nome">
+    <!-- Container principal do login -->
+    <div class="login-container">
+        <!-- Título da faculdade -->
+        <h1>Faculdade Faculândia</h1>
+        
+        <!-- Campo de nome -->
+        <div class="input-group">
+            <label>Nome:</label>
+            <input type="text" placeholder="Digite seu nome..." required>
         </div>
-        <div>
-            <label for="matricula">Matrícula:</label><br>
-            <input type="text" id="matricula" name="matricula" required placeholder="Digite sua matrícula">
+        
+        <!-- Campo de matrícula -->
+        <div class="input-group">
+            <label>Matrícula:</label>
+            <input type="text" placeholder="Digite sua matrícula..." required>
         </div>
-        <div>
-            <label for="password">Senha:</label><br>
-            <input type="password" id="password" name="password" required placeholder="Digite sua senha">
+        
+        <!-- Campo de senha -->
+        <div class="input-group">
+            <label>Senha:</label>
+            <input type="password" placeholder="Digite sua senha..." required>
         </div>
-        <button type="submit">Acessar</button>
-    </form>
+        
+        <!-- Botão de acesso -->
+        <button class="login-button">ACESSAR</button>
+        
+        <!-- Rodapé com contato -->
+        <div class="footer">
+            Contato: 4002-8922
+        </div>
+    </div>
 
+    <!-- Script JavaScript externo -->
     <script src="../JS/loginAcesso.js"></script>
 </body>
 </html>

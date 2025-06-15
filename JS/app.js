@@ -1,11 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
-
     // as constantes que tão puxando do id dos html.
     const btnSair = document.getElementById('btnSair');
     const modalRequerimento = document.getElementById('modalRequerimento');
     const seletorOpcoes = document.getElementById('seletorOpcoes');
     const btnEncaminhar = document.getElementById('btnEncaminhar');
 
+    // Pega o nome do aluno salvo quando fez login
+    const nomeAluno = localStorage.getItem('nomeAluno');
+    if (nomeAluno) {
+        const elementoNome = document.getElementById('nomeUsuario');
+        if (elementoNome) {
+            elementoNome.textContent = nomeAluno;
+        }
+        // Se quiser mudar também o "Aluno" para o nome, descomente:
+        // const tipoUsuario = document.getElementById('tipo-usuario');
+        // if (tipoUsuario) tipoUsuario.textContent = nomeAluno.split(' ')[0];
+    }
 
     function fecharModal() {
         if (modalRequerimento) {
@@ -20,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // botão de sair que é padrão pra todos, então só chamar ele que tá safe
     if (btnSair) {
         btnSair.addEventListener('click', function() {
+            // Limpa o nome ao sair (opcional)
+            localStorage.removeItem('nomeAluno');
             window.location.href = 'index.html';
         });
     }

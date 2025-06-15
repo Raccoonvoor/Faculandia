@@ -1,0 +1,104 @@
+/* Cabeçalho */
+.header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 30px;
+}
+
+.faculdade {
+    text-align: left;
+    font-size: 24px;
+    color: #003366;
+    margin: 0;
+    align-self: start;
+}
+
+.nome-aluno {
+    text-align: right;
+    font-size: 18px;
+    margin: 0;
+    align-self: start;
+}
+
+/* Botões */
+.botoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+#btnSair {
+    grid-column: 3;
+    justify-self: end;
+    margin-top: 5px;
+}
+
+/* Seção de histórico */
+.titulo-secao {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+    grid-column: 1 / span 3;
+}
+
+/* Layout principal */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+}
+
+/* Botões laterais */
+#btnNovoRequerimento {
+    grid-column: 1;
+    justify-self: start;
+}
+
+#btnComprovante {
+    grid-column: 1;
+    justify-self: start;
+    margin-top: 10px;
+}
+
+/* Editar e + */
+#btnEditar {
+    grid-column: 3;
+    justify-self: end;
+}
+
+/* Símbolo + (adicione um elemento span com classe "mais" no HTML) */
+.mais {
+    grid-column: 3;
+    justify-self: end;
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+/* Descrição e status */
+.texto {
+    grid-column: 2;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.status {
+    grid-column: 3;
+    align-self: start;
+    justify-self: end;
+    padding: 10px;
+    background-color: #e8f5e9;
+    border-radius: 5px;
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+/* Texto "enviado" */
+.status-enviado {
+    grid-column: 3;
+    justify-self: end;
+    margin-top: 5px;
+    color: #2e7d32;
+    font-size: 14px;
+}
