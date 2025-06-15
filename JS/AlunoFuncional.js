@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos da interface
     const nomeUsuario = localStorage.getItem('nomeAluno');
     const matricula = localStorage.getItem('matriculaAluno');
     const btnSair = document.getElementById('btnSair');
     const btnNovoRequerimento = document.getElementById('btnNovoRequerimento');
+    const btnNovoRequerimentoLista = document.getElementById('btnNovoRequerimentoLista');
     const novoRequerimentoSection = document.getElementById('novoRequerimentoSection');
     const btnCancelarRequerimento = document.getElementById('btnCancelarRequerimento');
     const btnEnviarRequerimento = document.getElementById('btnEnviarRequerimento');
@@ -15,33 +15,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
     const btnSalvarEdicao = document.getElementById('btnSalvarEdicao');
     const textoRequerimentoEditado = document.getElementById('textoRequerimentoEditado');
+    const respostasConteudo = document.getElementById('respostasConteudo');
+    const listaRequerimentos = document.getElementById('listaRequerimentos');
+    const detalhesRequerimentoContainer = document.getElementById('detalhesRequerimentoContainer');
 
-    // Exibir nome do usuário
+    // Variável do requerimento que tá atualmente.
+    let requerimentoAtualId = null;
+
+    // Mostrar oo nome do cara.
     if (nomeUsuario) {
         document.getElementById('nomeUsuario').textContent = nomeUsuario;
     }
 
-    // Botão Sair
+    // Botão de sair.
     btnSair.addEventListener('click', function() {
         localStorage.removeItem('nomeAluno');
         localStorage.removeItem('matriculaAluno');
         window.location.href = '../HTML/index.html';
     });
 
-    // Novo Requerimento
-    btnNovoRequerimento.addEventListener('click', function() {
+    // Novo Requerimento.
+    btnNovoRequerimento.addEventListener('click', mostrarEditorRequerimento);
+    btnNovoRequerimentoLista.addEventListener('click', mostrarEditorRequerimento);
+
+    function mostrarEditorRequerimento() {
         novoRequerimentoSection.style.display = 'block';
         textoNovoRequerimento.value = '';
         textoNovoRequerimento.focus();
-        novoRequerimentoSection.scrollIntoView({ behavior: 'smooth' });
-    });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    // Cancelar novo requerimento
+    // Cancelar novo requerimento.
     btnCancelarRequerimento.addEventListener('click', function() {
         novoRequerimentoSection.style.display = 'none';
     });
 
-    // Enviar novo requerimento
+    // Enviar novo requerimento.
     btnEnviarRequerimento.addEventListener('click', function() {
         const texto = textoNovoRequerimento.value.trim();
         
@@ -53,70 +62,128 @@ document.addEventListener('DOMContentLoaded', function() {
         enviarRequerimento(texto);
     });
 
-    // Função para enviar requerimento para a secretaria
-    function enviarRequerimentoParaSecretaria(texto, nomeAluno, matricula) {
+    // Função para enviar requerimento.
+    function enviarRequerimento(texto) {
+        const nomeAluno = localStorage.getItem('nomeAluno');
+        const matriculaAluno = localStorage.getItem('matriculaAluno');
+        
         const requerimento = {
-            id: Date.now(), // ID único baseado no timestamp
+            id: Date.now(),
             conteudo: texto,
             aluno: nomeAluno,
-            matricula: matricula,
+            matricula: matriculaAluno,
             data: new Date().toISOString(),
             status: 'enviado',
-            historico: [
-                {
-                    acao: 'enviado',
-                    data: new Date().toISOString(),
-                    por: nomeAluno
-                }
-            ]
+            historico: [{
+                acao: 'enviado',
+                data: new Date().toISOString(),
+                por: nomeAluno,
+                descricao: 'Requerimento enviado pelo aluno'
+            }]
         };
         
-        // Armazenar no localStorage (simulando banco de dados)
+        // Armazenar no localStorage.
         let requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
         requerimentos.push(requerimento);
         localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
         
-        return requerimento;
-    }
-
-    // Função para enviar requerimento
-    function enviarRequerimento(texto) {
-        btnEnviarRequerimento.disabled = true;
-        btnEnviarRequerimento.textContent = 'Enviando...';
-        
-        const nomeAluno = localStorage.getItem('nomeAluno');
-        const matricula = localStorage.getItem('matriculaAluno');
-        
-        // Envia para a secretaria
-        const requerimento = enviarRequerimentoParaSecretaria(texto, nomeAluno, matricula);
-        
-        // Atualiza a visualização
-        mostrarRequerimento(requerimento);
-        
-        // Limpa e esconde o editor
-        textoNovoRequerimento.value = '';
+        // Atualizar a visualização.
+        carregarListaRequerimentos();
+        mostrarDetalhesRequerimento(requerimento.id);
         novoRequerimentoSection.style.display = 'none';
-        
-        // Reativa o botão
-        btnEnviarRequerimento.disabled = false;
-        btnEnviarRequerimento.textContent = 'Enviar Requerimento';
-        
-        // Atualiza o botão de edição
-        btnEditarRequerimento.style.display = 'block';
-        
-        // Feedback ao usuário
         alert(`Requerimento enviado com sucesso! Protocolo: ${requerimento.id}`);
     }
 
-    // Função para mostrar um requerimento na tela
-    function mostrarRequerimento(requerimento) {
-        const paragrafos = requerimento.conteudo.split('\n').filter(p => p.trim() !== '');
-        descricaoConteudo.innerHTML = paragrafos.map(p => `<p>${p}</p>`).join('');
+    // Função para carregar a lista de requerimentos.
+    function carregarListaRequerimentos() {
+        const matriculaAluno = localStorage.getItem('matriculaAluno');
+        const requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
+        const requerimentosAluno = requerimentos.filter(r => r.matricula === matriculaAluno);
         
-        // Monta o status com base no histórico
+        listaRequerimentos.innerHTML = '';
+        
+        if (requerimentosAluno.length === 0) {
+            listaRequerimentos.innerHTML = '<p class="nenhum-requerimento">Nenhum requerimento encontrado.</p>';
+            detalhesRequerimentoContainer.style.display = 'none';
+            return;
+        }
+        
+        // Ordena do mais recente para o mais antigo.
+        requerimentosAluno.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(req => {
+            const item = document.createElement('div');
+            item.className = 'item-requerimento';
+            item.dataset.id = req.id;
+            
+            const ultimoStatus = req.historico[req.historico.length - 1]?.acao || 'enviado';
+            const statusClass = getStatusClass(ultimoStatus);
+            
+            item.innerHTML = `
+                <div class="requerimento-resumo ${statusClass}">
+                    <div class="requerimento-id">#${req.id}</div>
+                    <div class="requerimento-data">${new Date(req.data).toLocaleDateString()}</div>
+                    <div class="requerimento-status ${statusClass}">${formatStatus(ultimoStatus)}</div>
+                </div>
+            `;
+            
+            item.addEventListener('click', () => mostrarDetalhesRequerimento(req.id));
+            listaRequerimentos.appendChild(item);
+        });
+        if (requerimentosAluno.length > 0) {
+            mostrarDetalhesRequerimento(requerimentosAluno[0].id);
+        }
+    }
+
+    // Funções auxiliares para status.
+    function getStatusClass(status) {
+        switch(status) {
+            case 'enviado': return 'status-enviado';
+            case 'editado': return 'status-editado';
+            case 'encaminhado': return 'status-encaminhado';
+            case 'processado': return 'status-processado';
+            default: return 'status-pendente';
+        }
+    }
+
+    function formatStatus(status) {
+        switch(status) {
+            case 'enviado': return 'ENVIADO';
+            case 'editado': return 'EDITADO';
+            case 'encaminhado': return 'ENCAMINHADO';
+            case 'processado': return 'RESPONDIDO';
+            default: return 'PENDENTE';
+        }
+    }
+
+    // Função para mostrar detalhes do requerimento.
+    function mostrarDetalhesRequerimento(id) {
+        requerimentoAtualId = id;
+        const requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
+        const requerimento = requerimentos.find(r => r.id == id);
+        
+        if (!requerimento) return;
+        btnEditarRequerimento.style.display = (requerimento.status === 'enviado' || requerimento.status === 'editado') ? 'block' : 'none';
+        descricaoConteudo.innerHTML = requerimento.conteudo.split('\n')
+            .filter(p => p.trim() !== '')
+            .map(p => `<p>${p}</p>`)
+            .join('');
+        atualizarStatusRequerimento(requerimento);
+        
+
+        atualizarRespostas(requerimento);
+        
+
+        document.querySelectorAll('.item-requerimento').forEach(item => {
+            item.classList.toggle('selecionado', item.dataset.id == id);
+        });
+        
+
+        detalhesRequerimentoContainer.style.display = 'block';
+    }
+
+    // Função para atualizar o status do requerimento.
+    function atualizarStatusRequerimento(requerimento) {
         let statusHTML = `<h3>STATUS</h3>`;
         
-        // Adiciona todos os status do histórico
         requerimento.historico.forEach(item => {
             let statusClass = '';
             let statusText = '';
@@ -125,61 +192,85 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusClass = 'status-enviado';
                 statusText = 'ENVIADO PARA SECRETARIA';
             } else if (item.acao === 'encaminhado') {
-                statusClass = 'status-processado';
-                statusText = `ENCAMINHADO PARA ${item.para.toUpperCase()}`;
+                statusClass = 'status-encaminhado';
+                statusText = `ENCAMINHADO PARA ${item.para?.toUpperCase() || ''}`;
             } else if (item.acao === 'processado') {
-                statusClass = item.parecer === 'aprovado' ? 'status-aprovado' : 
-                             item.parecer === 'reprovado' ? 'status-reprovado' : 'status-ajustes';
-                statusText = `PARECER: ${item.parecer.toUpperCase()} (${item.area.toUpperCase()})`;
+                statusClass = item.parecer === 'aprovado' ? 'status-processado' : 
+                             item.parecer === 'reprovado' ? 'status-pendente' : 'status-editado';
+                statusText = `PARECER: ${item.parecer?.toUpperCase() || ''} (${item.area?.toUpperCase() || ''})`;
             } else if (item.acao === 'editado') {
-                statusClass = 'status-pendente';
+                statusClass = 'status-editado';
                 statusText = 'EDITADO PELO ALUNO';
             }
             
-            statusHTML += `<div class="status-item ${statusClass}">${statusText} - ${new Date(item.data).toLocaleString()}</div>`;
+            if (statusClass && statusText) {
+                statusHTML += `<div class="status-item ${statusClass}">${statusText} - ${new Date(item.data).toLocaleString()}</div>`;
+            }
         });
         
-        // Adiciona informações do protocolo
         statusHTML += `<div class="status-info">Protocolo: ${requerimento.id}</div>`;
-        statusHTML += `<div class="status-info">Data de abertura: ${new Date(requerimento.data).toLocaleString()}</div>`;
-        
         statusBox.innerHTML = statusHTML;
-        
-        // Mostra ou esconde o botão de edição
-        btnEditarRequerimento.style.display = requerimento.status === 'enviado' ? 'block' : 'none';
     }
 
-    // Função para ajustar o textarea no modal
-    function ajustarTextareaModal() {
-        const textarea = textoRequerimentoEditado;
-        const modalContent = document.querySelector('.modal-conteudo');
+    // Função para atualizar as respostas.
+    function atualizarRespostas(requerimento) {
+        const respostas = requerimento.historico.filter(item => 
+            item.acao === 'processado' && item.parecer
+        );
         
-        // Calcula a altura máxima disponível
-        const espacoDisponivel = window.innerHeight - 200;
-        textarea.style.maxHeight = espacoDisponivel + 'px';
-        modalContent.style.maxHeight = (espacoDisponivel + 100) + 'px';
+        if (respostas.length === 0) {
+            respostasConteudo.innerHTML = '<p>Nenhuma resposta disponível ainda.</p>';
+        } else {
+            let htmlRespostas = '';
+            
+            respostas.forEach(resposta => {
+                const classeResposta = resposta.parecer === 'aprovado' ? 'aprovado' : 
+                                      resposta.parecer === 'reprovado' ? 'reprovado' : 'ajustes';
+                
+                htmlRespostas += `
+                    <div class="resposta-item ${classeResposta}">
+                        <div class="resposta-header ${classeResposta}">
+                            ${resposta.area?.toUpperCase() || 'ÁREA'} - ${resposta.parecer?.toUpperCase() || 'PARECER'}
+                        </div>
+                        <div class="resposta-data">
+                            ${new Date(resposta.data).toLocaleString()} por ${resposta.por || 'Responsável'}
+                        </div>
+                        <div class="resposta-conteudo">
+                            ${resposta.descricao || 'Sem descrição adicional'}
+                            ${resposta.observacoes ? `<p><strong>Observações:</strong> ${resposta.observacoes}</p>` : ''}
+                        </div>
+                        <div class="assinatura-container">
+                            <div class="assinatura-texto">Assinatura Digital:</div>
+                            <img src="../Imagens/assinatura.png" alt="Assinatura" class="assinatura-img">
+                        </div>
+                    </div>
+                `;
+            });
+            
+            respostasConteudo.innerHTML = htmlRespostas;
+        }
     }
 
-    // Editar Requerimento
+    // Editar Requerimento.
     btnEditarRequerimento.addEventListener('click', function() {
-        const textoAtual = descricaoConteudo.innerText;
-        textoRequerimentoEditado.value = textoAtual;
-        modalEdicao.style.display = 'flex';
-        ajustarTextareaModal();
+        const requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
+        const requerimento = requerimentos.find(r => r.id == requerimentoAtualId);
         
-        // Foca no textarea e coloca o cursor no final
-        setTimeout(() => {
+        if (requerimento) {
+            textoRequerimentoEditado.value = requerimento.conteudo;
+            modalEdicao.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
             textoRequerimentoEditado.focus();
-            textoRequerimentoEditado.selectionStart = textoRequerimentoEditado.value.length;
-        }, 100);
+        }
     });
 
-    // Cancelar edição
+    // Cancelar edição.
     btnCancelarEdicao.addEventListener('click', function() {
         modalEdicao.style.display = 'none';
+        document.body.style.overflow = 'auto';
     });
 
-    // Salvar edição
+    // Salvar edição.
     btnSalvarEdicao.addEventListener('click', function() {
         const novoTexto = textoRequerimentoEditado.value.trim();
         
@@ -188,141 +279,47 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Atualiza o requerimento no localStorage
         let requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
-        const matricula = localStorage.getItem('matriculaAluno');
-        const reqIndex = requerimentos.findIndex(r => r.matricula === matricula && (r.status === 'enviado' || r.status === 'editado'));
+        const reqIndex = requerimentos.findIndex(r => r.id == requerimentoAtualId);
         
         if (reqIndex !== -1) {
+            if (requerimentos[reqIndex].status !== 'enviado' && 
+                requerimentos[reqIndex].status !== 'editado') {
+                alert('Este requerimento já foi processado e não pode mais ser editado.');
+                modalEdicao.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                return;
+            }
+
             requerimentos[reqIndex].conteudo = novoTexto;
             requerimentos[reqIndex].status = 'editado';
             requerimentos[reqIndex].historico.push({
                 acao: 'editado',
                 data: new Date().toISOString(),
-                por: localStorage.getItem('nomeAluno')
+                por: localStorage.getItem('nomeAluno'),
+                descricao: 'Requerimento editado pelo aluno'
             });
             
             localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
             
-            // Atualiza a visualização
-            mostrarRequerimento(requerimentos[reqIndex]);
-            
+            // Atualiza a visualização.
+            carregarListaRequerimentos();
+            mostrarDetalhesRequerimento(requerimentoAtualId);
             modalEdicao.style.display = 'none';
+            document.body.style.overflow = 'auto';
             alert('Requerimento atualizado com sucesso!');
         } else {
-            alert('Não foi possível encontrar o requerimento para edição.');
+            alert('Erro: Requerimento não encontrado.');
         }
     });
 
-    // Fechar modal ao clicar fora
+    // Fechar modal ao clicar fora.
     window.addEventListener('click', function(event) {
         if (event.target === modalEdicao) {
             modalEdicao.style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
     });
 
-    // Ajustar textarea quando a janela é redimensionada
-    window.addEventListener('resize', function() {
-        if (modalEdicao.style.display === 'flex') {
-            ajustarTextareaModal();
-        }
-    });
-
-    // Estado inicial - carrega os requerimentos do aluno
-    function carregarRequerimentosAluno() {
-        const matricula = localStorage.getItem('matriculaAluno');
-        const requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
-        
-        // Filtra requerimentos do aluno atual, ordena do mais recente para o mais antigo
-        const requerimentosAluno = requerimentos
-            .filter(r => r.matricula === matricula)
-            .sort((a, b) => new Date(b.data) - new Date(a.data));
-        
-        if (requerimentosAluno.length > 0) {
-            // Mostra o mais recente
-            mostrarRequerimento(requerimentosAluno[0]);
-            
-            // Se houver mais de um requerimento, adiciona seletor
-            if (requerimentosAluno.length > 1) {
-                criarSeletorRequerimentos(requerimentosAluno);
-            }
-        } else {
-            descricaoConteudo.innerHTML = '<p>Nenhum requerimento enviado ainda.</p>';
-            statusBox.innerHTML = `
-                <h3>STATUS</h3>
-                <div class="status-item status-vazio">Nenhum status disponível</div>
-            `;
-            btnEditarRequerimento.style.display = 'none';
-        }
-    }
-
-    // Cria um seletor para alternar entre requerimentos
-    function criarSeletorRequerimentos(requerimentos) {
-        const seletorContainer = document.createElement('div');
-        seletorContainer.className = 'seletor-requerimentos';
-        
-        const label = document.createElement('label');
-        label.textContent = 'Selecione um requerimento: ';
-        label.htmlFor = 'selectRequerimentos';
-        
-        const select = document.createElement('select');
-        select.id = 'selectRequerimentos';
-        
-        requerimentos.forEach((req, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = `Req. ${req.id} - ${new Date(req.data).toLocaleDateString()} (${req.status})`;
-            select.appendChild(option);
-        });
-        
-        select.addEventListener('change', function() {
-            mostrarRequerimento(requerimentos[this.value]);
-        });
-        
-        seletorContainer.appendChild(label);
-        seletorContainer.appendChild(select);
-        
-        // Insere antes da descrição
-        descricaoConteudo.parentNode.insertBefore(seletorContainer, descricaoConteudo);
-    }
-
-    // Adicionar estilos para os novos elementos
-    const style = document.createElement('style');
-    style.textContent = `
-        .status-aprovado {
-            background-color: #28a745;
-            color: white;
-        }
-        .status-reprovado {
-            background-color: #dc3545;
-            color: white;
-        }
-        .status-ajustes {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        .status-info {
-            margin-top: 10px;
-            padding: 8px 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .seletor-requerimentos {
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-        }
-        .seletor-requerimentos select {
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Carregar requerimentos ao iniciar
-    carregarRequerimentosAluno();
+    carregarListaRequerimentos();
 });

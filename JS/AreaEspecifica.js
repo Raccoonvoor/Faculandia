@@ -1,219 +1,142 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Recupera dados do usuário
     const nomeUsuario = localStorage.getItem('nomeAluno');
     const matricula = localStorage.getItem('matriculaAluno');
     
-    // Exibe nome do usuário
+    // Exibe nome do usuário.
     if (nomeUsuario) {
         document.getElementById('nomeUsuario').textContent = nomeUsuario;
     }
     
-    // Determina e exibe a área específica
+    // Determina a área específica baseada nos dois primeiros dígitos da matrícula.
+    let areaUsuario = '';
     if (matricula) {
-        const doisPrimeirosDigitos = matricula.substring(0, 2);
-        let areaUsuario = '';
-        
-        if (doisPrimeirosDigitos === '75') {
-            areaUsuario = 'TESOURARIA';
-        } else if (doisPrimeirosDigitos === '80') {
-            areaUsuario = 'BIBLIOTECA';
-        } else if (doisPrimeirosDigitos === '85') {
-            areaUsuario = 'COORDENAÇÃO';
-        } else {
-            areaUsuario = 'ÁREA DESCONHECIDA';
-        }
-        
-        document.getElementById('areaUsuario').textContent = areaUsuario;
+        const prefixo = matricula.substring(0, 2);
+        if (prefixo === '75') areaUsuario = 'tesouraria';
+        else if (prefixo === '80') areaUsuario = 'biblioteca';
+        else if (prefixo === '85') areaUsuario = 'coordenacao';
     }
+    
+    // Exibe a área do usuário.
+    document.getElementById('areaUsuario').textContent = areaUsuario.toUpperCase();
 
-    // Variáveis de controle
+    // Variáveis de controle.
     let processoSelecionado = null;
-    const secaoParecer = document.querySelector('.secao-parecer');
     const conteudoProcessoSelecionado = document.getElementById('conteudoProcessoSelecionado');
     const btnEmitirParecer = document.getElementById('btnEmitirParecer');
     const seletorOpcoes = document.getElementById('seletorOpcoes');
     const btnDesselecionar = document.getElementById('btnDesselecionar');
 
-    // Função para carregar os requerimentos encaminhados
+    // Função para carregar os requerimentos encaminhados para esta área.
     function carregarRequerimentosEncaminhados() {
-        const areaUsuario = document.getElementById('areaUsuario').textContent.toLowerCase();
-        const requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
         const secaoProcessos = document.querySelector('.secao-processos');
+        secaoProcessos.innerHTML = '<h2 class="section-title">PROCESSOS NOVOS</h2>';
         
-        // Limpa os processos existentes (exceto o título)
-        const processosContainer = document.createElement('div');
+        const requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
         
-        // Filtra requerimentos encaminhados para esta área e não finalizados
+        // Filtra requerimentos encaminhados para esta área e não processados.
         const requerimentosArea = requerimentos.filter(req => 
-            req.status === 'encaminhado' && 
-            req.destino === areaUsuario &&
-            !req.parecer
+            req.destino === areaUsuario && 
+            req.status === 'encaminhado' &&
+            !req.historico.some(h => h.acao === 'processado' && h.area === areaUsuario)
         );
         
         if (requerimentosArea.length === 0) {
-            processosContainer.innerHTML = '<p class="nenhum-processo">Nenhum requerimento pendente para esta área</p>';
+            secaoProcessos.innerHTML += '<p class="nenhum-processo">Nenhum requerimento pendente para esta área</p>';
         } else {
-            requerimentosArea.forEach(req => {
-                const processoHTML = `
-                    <div class="processo" data-id="${req.id}">
-                        <div class="processo-conteudo">
-                            <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
-                            <p><strong>Protocolo:</strong> ${req.id}</p>
-                            <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
-                            <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado').por}</p>
-                            <hr>
-                            ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
-                            <hr>
-                            <p><strong>Histórico:</strong></p>
-                            <ul class="historico">
-                                ${req.historico.map(item => `
-                                    <li>${item.acao.toUpperCase()} - ${new Date(item.data).toLocaleString()}</li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                        <button class="btn-processo">Selecionar</button>
+            requerimentosArea.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(req => {
+                const processo = document.createElement('div');
+                processo.className = 'processo';
+                processo.dataset.id = req.id;
+                
+                processo.innerHTML = `
+                    <div class="processo-conteudo">
+                        <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
+                        <p><strong>Protocolo:</strong> ${req.id}</p>
+                        <p><strong>Data:</strong> ${new Date(req.data).toLocaleDateString()}</p>
+                        <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado')?.por || 'N/A'}</p>
+                        <hr>
+                        ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
                     </div>
+                    <button class="btn-processo">Selecionar</button>
                 `;
-                processosContainer.innerHTML += processoHTML;
+                secaoProcessos.appendChild(processo);
+                processo.querySelector('.btn-processo').addEventListener('click', () => {
+                    selecionarProcesso(req.id);
+                });
             });
         }
-        
-        // Substitui o conteúdo da seção de processos
-        const titulo = secaoProcessos.querySelector('.section-title');
-        secaoProcessos.innerHTML = '';
-        secaoProcessos.appendChild(titulo);
-        secaoProcessos.appendChild(processosContainer);
-        
-        // Adiciona os eventos aos novos botões
-        document.querySelectorAll('.btn-processo').forEach(botao => {
-            botao.addEventListener('click', function() {
-                selecionarProcesso(this);
-            });
-        });
     }
 
-    // Função para selecionar um processo
-    function selecionarProcesso(botao) {
-        // Remove a seleção anterior
-        document.querySelectorAll('.processo').forEach(proc => {
-            proc.classList.remove('selecionado');
-        });
-        
-        // Destaca o processo selecionado
-        const processo = botao.closest('.processo');
-        processo.classList.add('selecionado');
-        
-        // Armazena o ID do processo selecionado
-        processoSelecionado = processo.dataset.id;
-        
-        // Atualiza a seção de parecer
-        const req = JSON.parse(localStorage.getItem('requerimentos'))
-            .find(r => r.id == processoSelecionado);
+    // Função para selecionar um processo.
+    function selecionarProcesso(id) {
+        processoSelecionado = id;
+        const req = JSON.parse(localStorage.getItem('requerimentos')).find(r => r.id == id);
         
         conteudoProcessoSelecionado.innerHTML = `
             <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
             <p><strong>Protocolo:</strong> ${req.id}</p>
-            <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
-            <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado').por}</p>
+            <p><strong>Data:</strong> ${new Date(req.data).toLocaleDateString()}</p>
+            <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado')?.por || 'N/A'}</p>
             <hr>
             ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
-            <hr>
-            <p><strong>Histórico:</strong></p>
-            <ul class="historico">
-                ${req.historico.map(item => `
-                    <li>${item.acao.toUpperCase()} - ${new Date(item.data).toLocaleString()}</li>
-                `).join('')}
-            </ul>
         `;
-        
-        secaoParecer.classList.add('com-processo-selecionado');
     }
 
-    // Função para desselecionar processo
+    // Função para desselecionar processo.
     function desselecionarProcesso() {
-        document.querySelectorAll('.processo').forEach(proc => {
-            proc.classList.remove('selecionado');
-        });
-        
         processoSelecionado = null;
         conteudoProcessoSelecionado.innerHTML = '<p vazio>Nenhum processo selecionado</p>';
-        secaoParecer.classList.remove('com-processo-selecionado');
-        seletorOpcoes.value = '';
     }
 
-    // Desselecionar processo
+    // Desselecionar processo.
     btnDesselecionar.addEventListener('click', desselecionarProcesso);
 
-    // Emitir parecer
+    // Emitir parecer.
     btnEmitirParecer.addEventListener('click', function() {
         if (!processoSelecionado) {
             alert('Por favor, selecione um processo para emitir parecer.');
             return;
         }
         
-        if (!seletorOpcoes.value) {
+        const parecer = seletorOpcoes.value;
+        if (!parecer) {
             alert('Por favor, selecione uma opção de parecer.');
             return;
         }
         
-        const parecer = seletorOpcoes.options[seletorOpcoes.selectedIndex].text;
-        const areaUsuario = document.getElementById('areaUsuario').textContent.toLowerCase();
+        const descricao = prompt("Digite uma descrição para o parecer:") || '';
+        const nomeUsuario = localStorage.getItem('nomeAluno');
+        const observacoes = prompt("Alguma observação adicional?") || '';
         
-        // Atualiza o requerimento no "banco de dados"
+        // Atualiza o requerimento.
         let requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
         const reqIndex = requerimentos.findIndex(r => r.id == processoSelecionado);
         
         if (reqIndex !== -1) {
             requerimentos[reqIndex].status = 'processado';
-            requerimentos[reqIndex].parecer = parecer.toLowerCase();
             requerimentos[reqIndex].historico.push({
                 acao: 'processado',
-                parecer: parecer.toLowerCase(),
+                parecer: parecer,
+                descricao: descricao,
                 data: new Date().toISOString(),
-                por: localStorage.getItem('nomeAluno'),
-                area: areaUsuario
+                por: nomeUsuario,
+                area: areaUsuario,
+                observacoes: observacoes
             });
             
             localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
-            
-            // Feedback visual
-            alert(`Parecer "${parecer}" emitido com sucesso para o processo ${processoSelecionado}`);
-            
-            // Atualiza a lista de processos
+            alert('Parecer emitido com sucesso!');
             carregarRequerimentosEncaminhados();
-            
-            // Limpa a seleção
             desselecionarProcesso();
-            seletorOpcoes.value = '';
         }
     });
 
-    // Botão Sair
+    // Botão Sair.
     document.getElementById('btnSair').addEventListener('click', function() {
         localStorage.removeItem('nomeAluno');
         localStorage.removeItem('matriculaAluno');
         window.location.href = '../HTML/index.html';
     });
 
-    // Adicionar estilos CSS
-    const style = document.createElement('style');
-    style.textContent = `
-        .nenhum-processo {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 20px;
-        }
-        .historico {
-            margin-top: 10px;
-            padding-left: 20px;
-        }
-        .historico li {
-            margin-bottom: 5px;
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Carregar requerimentos ao iniciar
     carregarRequerimentosEncaminhados();
 });

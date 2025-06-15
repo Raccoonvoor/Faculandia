@@ -1,108 +1,6 @@
-/* Reset e estilos gerais */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-}
+@import url('estilos-base.css');
 
-/* Barra azul no topo */
-.top-bar {
-    background-color: #003366;
-    color: white;
-    padding: 15px 0;
-    width: 100%;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.top-bar .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-.faculdade {
-    margin: 0;
-    font-size: 24px;
-    color: white;
-    font-weight: bold;
-}
-
-.user-area {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.user-name {
-    font-weight: bold;
-    color: white;
-}
-
-.separador {
-    color: rgba(255,255,255,0.7);
-}
-
-.area-usuario {
-    font-weight: bold;
-    color: #ffcc00;
-    background-color: rgba(0,0,0,0.2);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-    text-transform: uppercase;
-}
-
-.btn-sair {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-.btn-sair:hover {
-    background-color: #c82333;
-}
-
-/* Container principal */
-.main-container {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-/* Seções */
-.secao-processos, .secao-parecer {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 25px;
-    margin-bottom: 30px;
-}
-
-.section-title {
-    color: #003366;
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 22px;
-    border-bottom: 2px solid #003366;
-    padding-bottom: 10px;
-}
-
-/* Processos */
+/* Área dos burocratas */
 .processo {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -114,11 +12,6 @@ body {
     align-items: flex-start;
 }
 
-.processo-conteudo p {
-    margin: 5px 0;
-    line-height: 1.4;
-}
-
 .btn-processo {
     background-color: #28a745;
     color: white;
@@ -126,14 +19,8 @@ body {
     padding: 8px 15px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
     white-space: nowrap;
     margin-left: 15px;
-}
-
-.btn-processo:hover {
-    background-color: #218838;
 }
 
 /* Seção de parecer */
@@ -152,59 +39,16 @@ body {
     border: 1px solid #ddd;
     border-radius: 4px;
     margin: 15px 0;
-    font-size: 16px;
-}
-
-.botoes-acao {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
 }
 
 .btn-encaminhar {
     background-color: #003366;
     color: white;
-    border: none;
     padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.btn-encaminhar:hover {
-    background-color: #002244;
-}
-
-.btn-cancelar {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-.btn-cancelar:hover {
-    background-color: #5a6268;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .top-bar .container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    .user-area {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
     .processo {
         flex-direction: column;
     }
@@ -212,14 +56,6 @@ body {
     .btn-processo {
         margin-left: 0;
         margin-top: 10px;
-        width: 100%;
-    }
-    
-    .botoes-acao {
-        flex-direction: column;
-    }
-    
-    .botoes-acao button {
         width: 100%;
     }
 }

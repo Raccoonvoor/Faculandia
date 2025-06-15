@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Área do Aluno - Faculândia</title>
+    <link rel="stylesheet" href="../CSS/estilos-base.css">
     <link rel="stylesheet" href="../CSS/EstilosAluno.css">
 </head>
 <body>
-    <!-- Barra azul no topo -->
     <header class="top-bar">
         <div class="container">
             <h1 class="faculdade">Faculdade Faculândia</h1>
@@ -18,13 +18,11 @@
         </div>
     </header>
 
-    <!-- Botão para novo requerimento -->
     <div class="novo-requerimento-container">
         <button class="btn-novo-requerimento" id="btnNovoRequerimento">NOVO REQUERIMENTO</button>
     </div>
 
     <div class="main-container">
-        <!-- Seção para criar novo requerimento (inicialmente oculta) -->
         <section class="novo-requerimento-section" id="novoRequerimentoSection">
             <h2 class="section-title">CRIAR NOVO REQUERIMENTO</h2>
             <div class="editor-requerimento">
@@ -36,43 +34,52 @@
             </div>
         </section>
 
-        <!-- Seção de requerimento existente -->
         <section class="requerimento-section">
-            <h2 class="section-title">MEU REQUERIMENTO</h2>
+            <h2 class="section-title">MEUS REQUERIMENTOS</h2>
             
             <div class="content-wrapper">
-                <!-- Coluna esquerda (vazia) -->
-                <div class="left-column"></div>
-                
-                <!-- Coluna central (descrição) -->
-                <div class="center-column">
-                    <div class="descricao-box">
-                        <h3>DESCRIÇÃO</h3>
-                        <div class="descricao-conteudo" id="descricaoConteudo">
-                            <p>Nenhum requerimento enviado ainda.</p>
+                <div class="left-column">
+                    <div class="lista-requerimentos-box">
+                        <h3>MEUS REQUERIMENTOS</h3>
+                        <div class="lista-requerimentos" id="listaRequerimentos">
                         </div>
+                        <button class="btn-novo-requerimento" id="btnNovoRequerimentoLista">+ NOVO REQUERIMENTO</button>
                     </div>
                 </div>
                 
-                <!-- Coluna direita (status) -->
                 <div class="right-column">
-                    <button class="btn-editar" id="btnEditarRequerimento">EDITAR</button>
-                    
-                    <div class="status-box" id="statusBox">
-                        <h3>STATUS</h3>
-                        <div class="status-item status-vazio">Nenhum status disponível</div>
+                    <div id="detalhesRequerimentoContainer">
+                        <div class="descricao-box">
+                            <h3>DETALHES DO REQUERIMENTO</h3>
+                            <div class="descricao-conteudo" id="descricaoConteudo">
+                                <p>Selecione um requerimento para visualizar os detalhes.</p>
+                            </div>
+                            <button class="btn-editar" id="btnEditarRequerimento" style="display: none;">EDITAR REQUERIMENTO</button>
+                        </div>
+                        
+                        <div class="respostas-box" id="respostasBox">
+                            <h3>RESPOSTAS DAS ÁREAS</h3>
+                            <div class="respostas-conteudo" id="respostasConteudo">
+                                <p>Nenhuma resposta disponível ainda.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-box" id="statusBox">
+                            <h3>STATUS</h3>
+                            <div class="status-item status-vazio">Nenhum status disponível</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
 
-    <!-- Modal de Edição - ATUALIZADO -->
+    <!-- Modal de Edição -->
     <div id="modalEdicao" class="modal">
         <div class="modal-conteudo">
             <h3>Editar Requerimento</h3>
             <div class="textarea-container">
-                <textarea id="textoRequerimentoEditado"></textarea>
+                <textarea id="textoRequerimentoEditado" placeholder="Edite seu requerimento aqui..."></textarea>
             </div>
             <div class="modal-botoes">
                 <button id="btnCancelarEdicao" class="btn-cancelar">Cancelar</button>

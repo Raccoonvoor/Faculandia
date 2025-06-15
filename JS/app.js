@@ -1,14 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Constantes que pegam elementos do HTML
     const btnSair = document.getElementById('btnSair');
     const modalRequerimento = document.getElementById('modalRequerimento');
     const seletorOpcoes = document.getElementById('seletorOpcoes');
     const btnEncaminhar = document.getElementById('btnEncaminhar');
 
-    // Pega o nome do usuário salvo no login
+    // Pega o nome do usuário salvo no login.
     const nomeAluno = localStorage.getItem('nomeAluno');
     if (nomeAluno) {
-        // Atualiza o nome no elemento correto (ajustado para span.user-name)
         const elementoNome = document.querySelector('.user-name');
         if (elementoNome) {
             elementoNome.textContent = nomeAluno;
@@ -25,21 +23,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Botão Sair - Corrigido com caminho absoluto e verificação
+    // Botão Sair - Corrigido com caminho absoluto e verificação.
     if (btnSair) {
         btnSair.addEventListener('click', function() {
-            // Limpa os dados de sessão
             localStorage.removeItem('nomeAluno');
+            window.location.href = '../HTML/index.html';
             
-            // Redireciona para a página de login com caminho absoluto
-            window.location.href = '../HTML/index.html'; // Ajuste conforme sua estrutura
-            
-            // Para debug (pode remover depois)
+            // Debug (Pode remover isso daqui se precisar Thiago).
             console.log('Botão sair clicado - redirecionando...');
         });
     }
 
-    // Controle do modal de requerimentos
+    // Controle do modal de requerimentos.
     if (modalRequerimento) {
         const btnNovoRequerimento = document.getElementById('btnNovoRequerimento');
         const btnCancelar = document.getElementById('btnCancelar');
@@ -75,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Lógica da secretaria
+    // Lógica da secretaria.
     if (seletorOpcoes && btnEncaminhar) {
         seletorOpcoes.addEventListener('change', function() {
             console.log('Opção selecionada:', this.value);
