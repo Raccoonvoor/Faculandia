@@ -1,20 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // as constantes que tão puxando do id dos html.
+    // Constantes que pegam elementos do HTML
     const btnSair = document.getElementById('btnSair');
     const modalRequerimento = document.getElementById('modalRequerimento');
     const seletorOpcoes = document.getElementById('seletorOpcoes');
     const btnEncaminhar = document.getElementById('btnEncaminhar');
 
-    // Pega o nome do aluno salvo quando fez login
+    // Pega o nome do usuário salvo no login
     const nomeAluno = localStorage.getItem('nomeAluno');
     if (nomeAluno) {
-        const elementoNome = document.getElementById('nomeUsuario');
+        // Atualiza o nome no elemento correto (ajustado para span.user-name)
+        const elementoNome = document.querySelector('.user-name');
         if (elementoNome) {
             elementoNome.textContent = nomeAluno;
         }
-        // Se quiser mudar também o "Aluno" para o nome, descomente:
-        // const tipoUsuario = document.getElementById('tipo-usuario');
-        // if (tipoUsuario) tipoUsuario.textContent = nomeAluno.split(' ')[0];
     }
 
     function fecharModal() {
@@ -27,16 +25,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // botão de sair que é padrão pra todos, então só chamar ele que tá safe
+    // Botão Sair - Corrigido com caminho absoluto e verificação
     if (btnSair) {
         btnSair.addEventListener('click', function() {
-            // Limpa o nome ao sair (opcional)
+            // Limpa os dados de sessão
             localStorage.removeItem('nomeAluno');
-            window.location.href = 'index.html';
+            
+            // Redireciona para a página de login com caminho absoluto
+            window.location.href = '../HTML/index.html'; // Ajuste conforme sua estrutura
+            
+            // Para debug (pode remover depois)
+            console.log('Botão sair clicado - redirecionando...');
         });
     }
 
-    // Aqui tá a maioria das coisas lá do modal, também deixei as constantes fixas aqui pra ter um controle melhor e porque o modal específico de abrir um requerimento, é só do acesso do aluno, então não tinha a necessidade de pôr em outro canto.
+    // Controle do modal de requerimentos
     if (modalRequerimento) {
         const btnNovoRequerimento = document.getElementById('btnNovoRequerimento');
         const btnCancelar = document.getElementById('btnCancelar');
@@ -72,8 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // aquela barra lá na página da secretaria
-    // ainda falta adicionar a lógica das áreas específicas, mas dá pra reaproveitar.
+    // Lógica da secretaria
     if (seletorOpcoes && btnEncaminhar) {
         seletorOpcoes.addEventListener('change', function() {
             console.log('Opção selecionada:', this.value);

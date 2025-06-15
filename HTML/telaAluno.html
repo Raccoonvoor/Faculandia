@@ -3,77 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área do Aluno</title>
-    <link rel="stylesheet" href="CSS\EstilosAluno.css">
+    <title>Área do Aluno - Faculândia</title>
+    <link rel="stylesheet" href="../CSS/EstilosAluno.css">
 </head>
 <body>
-    
-    <div class="container"> <!-- que nem os outros, só coloquei tudo num container pra ser mais de boa de usar flex ou o que quiserem usar lá no css -->
-
-        <!-- Parte do cabeçalho -->
-        <div class="header">
+    <!-- Barra azul no topo -->
+    <header class="top-bar">
+        <div class="container">
             <h1 class="faculdade">Faculdade Faculândia</h1>
-            <h2 class="nome-aluno" id="nomeUsuario">Nome</h2>
+            <div class="user-area">
+                <span class="user-name">Nome</span>
+                <button class="btn-sair" id="btnSair">Sair</button>
+            </div>
         </div>
+    </header>
 
-        <!-- Todos os botões necessários da página-->
-        <!-- Até então só funcionam o botão de sair e de abrir um novo requerimento-->
-        <div class="botoes">
-            <button class="btn" id="btnSair">Sair</button>
-            <button class="btn" id="btnNovoRequerimento">Novo requerimento</button>
-            <button class="btn" id="btnComprovante">Comprovante</button>
-            <button class="btn" id="btnEditar">Editar</button>
-        </div>
-        
-        <!-- Aqui é onde vão ficar o histório com todos os requerimentos e tudo mais, opção de editar e tals, mas por agora só tem um texto pra servir de placeholder-->
-        <div class="secao">
-            <h4 class="titulo-secao">Descrição</h4>
-            <p class="texto">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </p>
-        </div>
-
-        <div class="secao">
-            <h4 class="titulo-secao">Status</h4>
-            <p class="texto status">Seu requerimento está em análise</p>
-        </div>
-    </div>
-
-    <!-- Essa daqui é a parte do modal pra criar o requerimento -->
-    <div id="modalRequerimento" class="modal">
-        <div class="modal-conteudo">
-            <h2>Novo Requerimento</h2>
-            <form id="formRequerimento">
-                <div class="form-group">
-                    <label>Matrícula:</label>
-                    <input type="text" class="form-input" id="matricula" required>
+    <div class="main-container">
+        <!-- Seção de novo requerimento -->
+        <section class="requerimento-section">
+            <h2 class="section-title">NOVO REQUERIMENTO</h2>
+            
+            <div class="content-wrapper">
+                <!-- Coluna esquerda -->
+                <div class="left-column">
+                    <div class="comprovante-box">
+                        <h3>Comprovante</h3>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Nome:</label>
-                    <input type="text" class="form-input" id="nome" required>
+                <!-- Coluna central -->
+                <div class="center-column">
+                    <div class="historico-box">
+                        <h3>HISTÓRICO</h3>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Assunto:</label>
-                    <input type="text" class="form-input" id="assunto" required>
+                <!-- Coluna direita -->
+                <div class="right-column">
+                    <button class="btn-editar">EDITAR</button>
+                    
+                    <div class="descricao-box">
+                        <h3>DESCRIÇÃO</h3>
+                    </div>
+                    
+                    <div class="status-box">
+                        <h3>STATUS</h3>
+                        <div class="status-enviado">ENVIADO</div>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Mensagem:</label>
-                    <textarea class="form-textarea" id="mensagem" required></textarea>
-                </div>
-                
-                <div id="mensagemSucesso" class="mensagem-sucesso">
-                    Requerimento enviado com sucesso!
-                </div>
-                
-                <div class="botoes-modal">
-                    <button type="button" class="btn btn-cancelar" id="btnCancelar">Cancelar</button>
-                    <button type="button" class="btn btn-enviar" id="btnEnviar">Enviar</button>
-                </div>
-            </form>
-        </div>
+            </div>
+        </section>
     </div>
 
     <script src="../JS/app.js"></script>
