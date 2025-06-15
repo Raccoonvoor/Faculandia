@@ -1,15 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos da interface
+    const nomeUsuario = localStorage.getItem('nomeAluno');
     const btnSair = document.getElementById('btnSair');
-    const btnEditar = document.querySelector('.btn-editar');
+    const btnNovoRequerimento = document.getElementById('btnNovoRequerimento');
+    const novoRequerimentoSection = document.getElementById('novoRequerimentoSection');
+    const btnCancelarRequerimento = document.getElementById('btnCancelarRequerimento');
+    const btnEnviarRequerimento = document.getElementById('btnEnviarRequerimento');
+    const textoNovoRequerimento = document.getElementById('textoNovoRequerimento');
+    const descricaoConteudo = document.getElementById('descricaoConteudo');
+    const statusBox = document.getElementById('statusBox');
+    const btnEditarRequerimento = document.getElementById('btnEditarRequerimento');
     const modalEdicao = document.getElementById('modalEdicao');
     const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
     const btnSalvarEdicao = document.getElementById('btnSalvarEdicao');
-    const textoRequerimento = document.getElementById('textoRequerimento');
-    const descricaoConteudo = document.querySelector('.descricao-conteudo');
+    const textoRequerimentoEditado = document.getElementById('textoRequerimentoEditado');
 
     // Exibir nome do usuário
-    const nomeUsuario = localStorage.getItem('nomeAluno');
     if (nomeUsuario) {
         document.getElementById('nomeUsuario').textContent = nomeUsuario;
     }
@@ -20,35 +26,152 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = '../HTML/index.html';
     });
 
-    // Abrir modal de edição
-    btnEditar.addEventListener('click', function() {
-        modalEdicao.style.display = 'flex';
+    // Novo Requerimento
+    btnNovoRequerimento.addEventListener('click', function() {
+        novoRequerimentoSection.style.display = 'block';
+        textoNovoRequerimento.value = '';
+        textoNovoRequerimento.focus();
+        novoRequerimentoSection.scrollIntoView({ behavior: 'smooth' });
     });
 
-    // Fechar modal
-    function fecharModal() {
-        modalEdicao.style.display = 'none';
+    // Cancelar novo requerimento
+    btnCancelarRequerimento.addEventListener('click', function() {
+        novoRequerimentoSection.style.display = 'none';
+    });
+
+    // Enviar novo requerimento
+    btnEnviarRequerimento.addEventListener('click', function() {
+        const texto = textoNovoRequerimento.value.trim();
+        
+        if (!texto) {
+            alert('Por favor, escreva seu requerimento antes de enviar.');
+            return;
+        }
+
+        enviarRequerimento(texto);
+    });
+
+    // Função para enviar requerimento
+    function enviarRequerimento(texto) {
+        btnEnviarRequerimento.disabled = true;
+        btnEnviarRequerimento.textContent = 'Enviando...';
+        
+        // Simulação de envio ao servidor
+        setTimeout(function() {
+            // Atualiza a visualização
+            const paragrafos = texto.split('\n').filter(p => p.trim() !== '');
+            descricaoConteudo.innerHTML = paragrafos.map(p => `<p>${p}</p>`).join('');
+            
+            // Atualiza o status
+            statusBox.innerHTML = `
+                <h3>STATUS</h3>
+                <div class="status-item status-enviado">ENVIADO</div>
+                <div class="status-item status-pendente">AGUARDANDO ANÁLISE</div>
+            `;
+            
+            // Limpa e esconde o editor
+            textoNovoRequerimento.value = '';
+            novoRequerimentoSection.style.display = 'none';
+            
+            // Reativa o botão
+            btnEnviarRequerimento.disabled = false;
+            btnEnviarRequerimento.textContent = 'Enviar Requerimento';
+            
+            // Atualiza o botão de edição
+            btnEditarRequerimento.style.display = 'block';
+            
+            // Feedback ao usuário
+            alert('Requerimento enviado com sucesso!');
+        }, 1000);
     }
 
+    // Função para ajustar o textarea no modal
+    function ajustarTextareaModal() {
+        const textarea = textoRequerimentoEditado;
+        const modalContent = document.querySelector('.modal-conteudo');
+        
+        // Calcula a altura máxima disponível
+        const espacoDisponivel = window.innerHeight - 200;
+        textarea.style.maxHeight = espacoDisponivel + 'px';
+        modalContent.style.maxHeight = (espacoDisponivel + 100) + 'px';
+    }
+
+    // Editar Requerimento
+    btnEditarRequerimento.addEventListener('click', function() {
+        const textoAtual = descricaoConteudo.innerText;
+        textoRequerimentoEditado.value = textoAtual;
+        modalEdicao.style.display = 'flex';
+        ajustarTextareaModal();
+        
+        // Foca no textarea e coloca o cursor no final
+        setTimeout(() => {
+            textoRequerimentoEditado.focus();
+            textoRequerimentoEditado.selectionStart = textoRequerimentoEditado.value.length;
+        }, 100);
+    });
+
     // Cancelar edição
-    btnCancelarEdicao.addEventListener('click', fecharModal);
+    btnCancelarEdicao.addEventListener('click', function() {
+        modalEdicao.style.display = 'none';
+    });
 
     // Salvar edição
     btnSalvarEdicao.addEventListener('click', function() {
-        const novoTexto = textoRequerimento.value;
-        // Quebra o texto em parágrafos
-        const paragrafos = novoTexto.split('\n').filter(p => p.trim() !== '');
+        const novoTexto = textoRequerimentoEditado.value.trim();
         
-        // Atualiza o conteúdo da descrição
+        if (!novoTexto) {
+            alert('O requerimento não pode estar vazio.');
+            return;
+        }
+
+        const paragrafos = novoTexto.split('\n').filter(p => p.trim() !== '');
         descricaoConteudo.innerHTML = paragrafos.map(p => `<p>${p}</p>`).join('');
         
-        fecharModal();
+        // Atualiza o status para refletir a edição
+        statusBox.innerHTML = `
+            <h3>STATUS</h3>
+            <div class="status-item status-enviado">ENVIADO</div>
+            <div class="status-item status-pendente">AGUARDANDO ANÁLISE (EDITADO)</div>
+        `;
+        
+        modalEdicao.style.display = 'none';
+        alert('Requerimento atualizado com sucesso!');
     });
 
     // Fechar modal ao clicar fora
     window.addEventListener('click', function(event) {
         if (event.target === modalEdicao) {
-            fecharModal();
+            modalEdicao.style.display = 'none';
         }
     });
+
+    // Ajustar textarea quando a janela é redimensionada
+    window.addEventListener('resize', function() {
+        if (modalEdicao.style.display === 'flex') {
+            ajustarTextareaModal();
+        }
+    });
+
+    // Estado inicial
+    function init() {
+        // Verifica se já existe um requerimento (simulação)
+        const requerimentoExistente = localStorage.getItem('ultimoRequerimento');
+        if (requerimentoExistente) {
+            descricaoConteudo.innerHTML = `<p>${requerimentoExistente}</p>`;
+            statusBox.innerHTML = `
+                <h3>STATUS</h3>
+                <div class="status-item status-processado">PROCESSADO PELA SECRETARIA</div>
+            `;
+            btnEditarRequerimento.style.display = 'block';
+        } else {
+            descricaoConteudo.innerHTML = '<p>Nenhum requerimento enviado ainda.</p>';
+            statusBox.innerHTML = `
+                <h3>STATUS</h3>
+                <div class="status-item status-vazio">Nenhum status disponível</div>
+            `;
+            btnEditarRequerimento.style.display = 'none';
+        }
+    }
+
+    init();
 });

@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../CSS/EstilosAreaEspecifica.css">
 </head>
 <body>
-    <!-- Barra azul no topo -->
     <header class="top-bar">
         <div class="container">
             <h1 class="faculdade">Faculdade Faculândia</h1>
@@ -21,12 +20,9 @@
             </div>
         </div>
     </header>
-
     <div class="main-container">
-        <!-- Seção de processos -->
         <section class="secao-processos">
             <h2 class="section-title">PROCESSOS NOVOS</h2>
-            
             <div class="processo">
                 <div class="processo-conteudo">
                     <p>Prezada Tesouraria,</p>
@@ -38,7 +34,6 @@
                 </div>
                 <button class="btn-processo">Selecionar</button>
             </div>
-            
             <div class="processo">
                 <div class="processo-conteudo">
                     <p>Olá,</p>
@@ -51,22 +46,17 @@
                 <button class="btn-processo">Selecionar</button>
             </div>
         </section>
-
-        <!-- Seção de parecer -->
         <section class="secao-parecer">
             <h2 class="section-title">EMITIR PARECER</h2>
-            
             <div id="conteudoProcessoSelecionado">
                 <p vazio>Nenhum processo selecionado</p>
             </div>
-            
             <select class="seletor" id="seletorOpcoes">
                 <option value="" selected disabled>SELECIONE UMA OPÇÃO</option>
                 <option value="aprovado">Aprovar</option>
                 <option value="reprovado">Reprovar</option>
                 <option value="ajustes">Solicitar ajustes</option>
             </select>
-            
             <div class="botoes-acao">
                 <button class="btn btn-cancelar" id="btnDesselecionar">Desselecionar</button>
                 <button class="btn btn-encaminhar" id="btnEmitirParecer">Emitir Parecer</button>
