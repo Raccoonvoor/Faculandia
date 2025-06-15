@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('nomeUsuario').textContent = nomeUsuario;
     }
 
-    // Variável para armazenar o processo selecionado (agora usando let)
+    // Variável para armazenar o processo selecionado
     let processoSelecionado = null;
 
     // Elementos da seção de encaminhamento
@@ -15,6 +15,78 @@ document.addEventListener('DOMContentLoaded', function() {
     const seletorOpcoes = document.getElementById('seletorOpcoes');
     const btnDesselecionar = document.getElementById('btnDesselecionar');
     const botoesProcessoSelecionado = document.querySelector('.botoes-processo-selecionado');
+
+    // Função para carregar os requerimentos
+    function carregarRequerimentos() {
+        const requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
+        const secaoProcessos = document.querySelector('.secao-processos');
+        
+        // Limpa os processos existentes (exceto o título)
+        const processosContainer = document.createElement('div');
+        
+        requerimentos.forEach(req => {
+            if (req.status === 'enviado' || req.status === 'encaminhado') {
+                const processoHTML = `
+                    <div class="processo" data-id="${req.id}">
+                        <div class="processo-conteudo">
+                            <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
+                            <p><strong>Protocolo:</strong> ${req.id}</p>
+                            <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
+                            <hr>
+                            ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
+                            <hr>
+                            <p><strong>Status:</strong> ${req.status.toUpperCase()}</p>
+                        </div>
+                        <button class="btn-processo">Selecionar</button>
+                    </div>
+                `;
+                processosContainer.innerHTML += processoHTML;
+            }
+        });
+        
+        // Substitui o conteúdo da seção de processos
+        const titulo = secaoProcessos.querySelector('.section-title');
+        secaoProcessos.innerHTML = '';
+        secaoProcessos.appendChild(titulo);
+        secaoProcessos.appendChild(processosContainer);
+        
+        // Adiciona os eventos aos novos botões
+        document.querySelectorAll('.btn-processo').forEach(botao => {
+            botao.addEventListener('click', function() {
+                // Remove a seleção anterior
+                document.querySelectorAll('.processo').forEach(proc => {
+                    proc.classList.remove('selecionado');
+                });
+                
+                // Destaca o processo selecionado
+                const processo = this.closest('.processo');
+                processo.classList.add('selecionado');
+                
+                // Armazena o ID do processo selecionado
+                processoSelecionado = processo.dataset.id;
+                
+                // Atualiza a seção de encaminhamento
+                const req = JSON.parse(localStorage.getItem('requerimentos'))
+                    .find(r => r.id == processoSelecionado);
+                
+                conteudoProcessoSelecionado.innerHTML = `
+                    <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
+                    <p><strong>Protocolo:</strong> ${req.id}</p>
+                    <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
+                    <hr>
+                    ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
+                    <hr>
+                    <p><strong>Status:</strong> ${req.status.toUpperCase()}</p>
+                `;
+                
+                secaoEncaminhamento.classList.add('com-processo-selecionado');
+                botoesProcessoSelecionado.style.display = 'flex';
+                
+                // Rola a página até a seção de encaminhamento
+                secaoEncaminhamento.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    }
 
     // Função para desselecionar o processo
     function desselecionarProcesso() {
@@ -29,31 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
         botoesProcessoSelecionado.style.display = 'none';
         seletorOpcoes.value = '';
     }
-
-    // Selecionar processo
-    document.querySelectorAll('.btn-processo').forEach(botao => {
-        botao.addEventListener('click', function() {
-            // Remove a seleção anterior
-            document.querySelectorAll('.processo').forEach(proc => {
-                proc.classList.remove('selecionado');
-            });
-            
-            // Destaca o processo selecionado
-            const processo = this.closest('.processo');
-            processo.classList.add('selecionado');
-            
-            // Armazena o conteúdo do processo selecionado
-            processoSelecionado = processo.querySelector('.processo-conteudo').innerHTML;
-            
-            // Atualiza a seção de encaminhamento com o processo selecionado
-            conteudoProcessoSelecionado.innerHTML = processoSelecionado;
-            secaoEncaminhamento.classList.add('com-processo-selecionado');
-            botoesProcessoSelecionado.style.display = 'flex';
-            
-            // Rola a página até a seção de encaminhamento
-            secaoEncaminhamento.scrollIntoView({ behavior: 'smooth' });
-        });
-    });
 
     // Desselecionar processo
     btnDesselecionar.addEventListener('click', desselecionarProcesso);
@@ -72,16 +119,40 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const departamento = seletorOpcoes.options[seletorOpcoes.selectedIndex].text;
         
-        // Aqui você pode adicionar a lógica para enviar os dados para o servidor
-        console.log('Processo encaminhado:', {
-            conteudo: processoSelecionado,
-            departamento: departamento
-        });
+        // Atualiza o requerimento no "banco de dados"
+        let requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
+        const reqIndex = requerimentos.findIndex(r => r.id == processoSelecionado);
         
-        // Feedback visual
-        alert(`Processo encaminhado com sucesso para: ${departamento}`);
-        
-        // Limpa a seleção
-        desselecionarProcesso();
+        if (reqIndex !== -1) {
+            requerimentos[reqIndex].status = 'encaminhado';
+            requerimentos[reqIndex].destino = departamento.toLowerCase();
+            requerimentos[reqIndex].historico.push({
+                acao: 'encaminhado',
+                para: departamento.toLowerCase(),
+                data: new Date().toISOString(),
+                por: localStorage.getItem('nomeAluno')
+            });
+            
+            localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
+            
+            // Feedback visual
+            alert(`Processo ${processoSelecionado} encaminhado com sucesso para: ${departamento}`);
+            
+            // Atualiza a lista de processos
+            carregarRequerimentos();
+            
+            // Limpa a seleção
+            desselecionarProcesso();
+        }
     });
+
+    // Botão Sair
+    document.getElementById('btnSair').addEventListener('click', function() {
+        localStorage.removeItem('nomeAluno');
+        localStorage.removeItem('matriculaAluno');
+        window.location.href = '../HTML/index.html';
+    });
+
+    // Carregar requerimentos ao iniciar
+    carregarRequerimentos();
 });

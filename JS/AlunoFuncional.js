@@ -51,38 +51,68 @@ document.addEventListener('DOMContentLoaded', function() {
         enviarRequerimento(texto);
     });
 
+    // Função para enviar requerimento para a secretaria
+    function enviarRequerimentoParaSecretaria(texto, nomeAluno, matricula) {
+        const requerimento = {
+            id: Date.now(), // ID único baseado no timestamp
+            conteudo: texto,
+            aluno: nomeAluno,
+            matricula: matricula,
+            data: new Date().toISOString(),
+            status: 'enviado',
+            historico: [
+                {
+                    acao: 'enviado',
+                    data: new Date().toISOString(),
+                    por: nomeAluno
+                }
+            ]
+        };
+        
+        // Armazenar no localStorage (simulando banco de dados)
+        let requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
+        requerimentos.push(requerimento);
+        localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
+        
+        return requerimento;
+    }
+
     // Função para enviar requerimento
     function enviarRequerimento(texto) {
         btnEnviarRequerimento.disabled = true;
         btnEnviarRequerimento.textContent = 'Enviando...';
         
-        // Simulação de envio ao servidor
-        setTimeout(function() {
-            // Atualiza a visualização
-            const paragrafos = texto.split('\n').filter(p => p.trim() !== '');
-            descricaoConteudo.innerHTML = paragrafos.map(p => `<p>${p}</p>`).join('');
-            
-            // Atualiza o status
-            statusBox.innerHTML = `
-                <h3>STATUS</h3>
-                <div class="status-item status-enviado">ENVIADO</div>
-                <div class="status-item status-pendente">AGUARDANDO ANÁLISE</div>
-            `;
-            
-            // Limpa e esconde o editor
-            textoNovoRequerimento.value = '';
-            novoRequerimentoSection.style.display = 'none';
-            
-            // Reativa o botão
-            btnEnviarRequerimento.disabled = false;
-            btnEnviarRequerimento.textContent = 'Enviar Requerimento';
-            
-            // Atualiza o botão de edição
-            btnEditarRequerimento.style.display = 'block';
-            
-            // Feedback ao usuário
-            alert('Requerimento enviado com sucesso!');
-        }, 1000);
+        const nomeAluno = localStorage.getItem('nomeAluno');
+        const matricula = localStorage.getItem('matriculaAluno');
+        
+        // Envia para a secretaria
+        const requerimento = enviarRequerimentoParaSecretaria(texto, nomeAluno, matricula);
+        
+        // Atualiza a visualização
+        const paragrafos = texto.split('\n').filter(p => p.trim() !== '');
+        descricaoConteudo.innerHTML = paragrafos.map(p => `<p>${p}</p>`).join('');
+        
+        // Atualiza o status
+        statusBox.innerHTML = `
+            <h3>STATUS</h3>
+            <div class="status-item status-enviado">ENVIADO</div>
+            <div class="status-item status-pendente">AGUARDANDO ANÁLISE</div>
+            <div class="status-info">Protocolo: ${requerimento.id}</div>
+        `;
+        
+        // Limpa e esconde o editor
+        textoNovoRequerimento.value = '';
+        novoRequerimentoSection.style.display = 'none';
+        
+        // Reativa o botão
+        btnEnviarRequerimento.disabled = false;
+        btnEnviarRequerimento.textContent = 'Enviar Requerimento';
+        
+        // Atualiza o botão de edição
+        btnEditarRequerimento.style.display = 'block';
+        
+        // Feedback ao usuário
+        alert(`Requerimento enviado com sucesso! Protocolo: ${requerimento.id}`);
     }
 
     // Função para ajustar o textarea no modal

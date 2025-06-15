@@ -34,6 +34,73 @@ document.addEventListener('DOMContentLoaded', function() {
     const seletorOpcoes = document.getElementById('seletorOpcoes');
     const btnDesselecionar = document.getElementById('btnDesselecionar');
 
+    // Função para carregar os requerimentos encaminhados
+    function carregarRequerimentosEncaminhados() {
+        const areaUsuario = document.getElementById('areaUsuario').textContent.toLowerCase();
+        const requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
+        const secaoProcessos = document.querySelector('.secao-processos');
+        
+        // Limpa os processos existentes (exceto o título)
+        const processosContainer = document.createElement('div');
+        
+        requerimentos.forEach(req => {
+            if (req.status === 'encaminhado' && req.destino === areaUsuario) {
+                const processoHTML = `
+                    <div class="processo" data-id="${req.id}">
+                        <div class="processo-conteudo">
+                            <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
+                            <p><strong>Protocolo:</strong> ${req.id}</p>
+                            <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
+                            <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado').por}</p>
+                            <hr>
+                            ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
+                        </div>
+                        <button class="btn-processo">Selecionar</button>
+                    </div>
+                `;
+                processosContainer.innerHTML += processoHTML;
+            }
+        });
+        
+        // Substitui o conteúdo da seção de processos
+        const titulo = secaoProcessos.querySelector('.section-title');
+        secaoProcessos.innerHTML = '';
+        secaoProcessos.appendChild(titulo);
+        secaoProcessos.appendChild(processosContainer);
+        
+        // Adiciona os eventos aos novos botões
+        document.querySelectorAll('.btn-processo').forEach(botao => {
+            botao.addEventListener('click', function() {
+                // Remove a seleção anterior
+                document.querySelectorAll('.processo').forEach(proc => {
+                    proc.classList.remove('selecionado');
+                });
+                
+                // Destaca o processo selecionado
+                const processo = this.closest('.processo');
+                processo.classList.add('selecionado');
+                
+                // Armazena o ID do processo selecionado
+                processoSelecionado = processo.dataset.id;
+                
+                // Atualiza a seção de parecer
+                const req = JSON.parse(localStorage.getItem('requerimentos'))
+                    .find(r => r.id == processoSelecionado);
+                
+                conteudoProcessoSelecionado.innerHTML = `
+                    <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
+                    <p><strong>Protocolo:</strong> ${req.id}</p>
+                    <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
+                    <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado').por}</p>
+                    <hr>
+                    ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
+                `;
+                
+                secaoParecer.classList.add('com-processo-selecionado');
+            });
+        });
+    }
+
     // Função para desselecionar processo
     function desselecionarProcesso() {
         document.querySelectorAll('.processo').forEach(proc => {
@@ -44,22 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
         conteudoProcessoSelecionado.innerHTML = '<p vazio>Nenhum processo selecionado</p>';
         secaoParecer.classList.remove('com-processo-selecionado');
     }
-
-    // Selecionar processo
-    document.querySelectorAll('.btn-processo').forEach(botao => {
-        botao.addEventListener('click', function() {
-            desselecionarProcesso();
-            
-            const processo = this.closest('.processo');
-            processo.classList.add('selecionado');
-            
-            processoSelecionado = processo.querySelector('.processo-conteudo').innerHTML;
-            conteudoProcessoSelecionado.innerHTML = processoSelecionado;
-            secaoParecer.classList.add('com-processo-selecionado');
-            
-            secaoParecer.scrollIntoView({ behavior: 'smooth' });
-        });
-    });
 
     // Desselecionar processo
     btnDesselecionar.addEventListener('click', desselecionarProcesso);
@@ -77,14 +128,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const parecer = seletorOpcoes.options[seletorOpcoes.selectedIndex].text;
-        console.log('Parecer emitido:', {
-            conteudo: processoSelecionado,
-            parecer: parecer
-        });
+        const areaUsuario = document.getElementById('areaUsuario').textContent.toLowerCase();
         
-        alert(`Parecer "${parecer}" emitido com sucesso!`);
-        desselecionarProcesso();
-        seletorOpcoes.value = '';
+        // Atualiza o requerimento no "banco de dados"
+        let requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
+        const reqIndex = requerimentos.findIndex(r => r.id == processoSelecionado);
+        
+        if (reqIndex !== -1) {
+            requerimentos[reqIndex].status = 'processado';
+            requerimentos[reqIndex].parecer = parecer.toLowerCase();
+            requerimentos[reqIndex].historico.push({
+                acao: 'processado',
+                parecer: parecer.toLowerCase(),
+                data: new Date().toISOString(),
+                por: localStorage.getItem('nomeAluno'),
+                area: areaUsuario
+            });
+            
+            localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
+            
+            // Feedback visual
+            alert(`Parecer "${parecer}" emitido com sucesso para o processo ${processoSelecionado}`);
+            
+            // Atualiza a lista de processos
+            carregarRequerimentosEncaminhados();
+            
+            // Limpa a seleção
+            desselecionarProcesso();
+            seletorOpcoes.value = '';
+        }
     });
 
     // Botão Sair
@@ -93,4 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('matriculaAluno');
         window.location.href = '../HTML/index.html';
     });
+
+    // Carregar requerimentos ao iniciar
+    carregarRequerimentosEncaminhados();
 });
