@@ -43,8 +43,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Limpa os processos existentes (exceto o título)
         const processosContainer = document.createElement('div');
         
-        requerimentos.forEach(req => {
-            if (req.status === 'encaminhado' && req.destino === areaUsuario) {
+        // Filtra requerimentos encaminhados para esta área e não finalizados
+        const requerimentosArea = requerimentos.filter(req => 
+            req.status === 'encaminhado' && 
+            req.destino === areaUsuario &&
+            !req.parecer
+        );
+        
+        if (requerimentosArea.length === 0) {
+            processosContainer.innerHTML = '<p class="nenhum-processo">Nenhum requerimento pendente para esta área</p>';
+        } else {
+            requerimentosArea.forEach(req => {
                 const processoHTML = `
                     <div class="processo" data-id="${req.id}">
                         <div class="processo-conteudo">
@@ -54,13 +63,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado').por}</p>
                             <hr>
                             ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
+                            <hr>
+                            <p><strong>Histórico:</strong></p>
+                            <ul class="historico">
+                                ${req.historico.map(item => `
+                                    <li>${item.acao.toUpperCase()} - ${new Date(item.data).toLocaleString()}</li>
+                                `).join('')}
+                            </ul>
                         </div>
                         <button class="btn-processo">Selecionar</button>
                     </div>
                 `;
                 processosContainer.innerHTML += processoHTML;
-            }
-        });
+            });
+        }
         
         // Substitui o conteúdo da seção de processos
         const titulo = secaoProcessos.querySelector('.section-title');
@@ -71,34 +87,46 @@ document.addEventListener('DOMContentLoaded', function() {
         // Adiciona os eventos aos novos botões
         document.querySelectorAll('.btn-processo').forEach(botao => {
             botao.addEventListener('click', function() {
-                // Remove a seleção anterior
-                document.querySelectorAll('.processo').forEach(proc => {
-                    proc.classList.remove('selecionado');
-                });
-                
-                // Destaca o processo selecionado
-                const processo = this.closest('.processo');
-                processo.classList.add('selecionado');
-                
-                // Armazena o ID do processo selecionado
-                processoSelecionado = processo.dataset.id;
-                
-                // Atualiza a seção de parecer
-                const req = JSON.parse(localStorage.getItem('requerimentos'))
-                    .find(r => r.id == processoSelecionado);
-                
-                conteudoProcessoSelecionado.innerHTML = `
-                    <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
-                    <p><strong>Protocolo:</strong> ${req.id}</p>
-                    <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
-                    <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado').por}</p>
-                    <hr>
-                    ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
-                `;
-                
-                secaoParecer.classList.add('com-processo-selecionado');
+                selecionarProcesso(this);
             });
         });
+    }
+
+    // Função para selecionar um processo
+    function selecionarProcesso(botao) {
+        // Remove a seleção anterior
+        document.querySelectorAll('.processo').forEach(proc => {
+            proc.classList.remove('selecionado');
+        });
+        
+        // Destaca o processo selecionado
+        const processo = botao.closest('.processo');
+        processo.classList.add('selecionado');
+        
+        // Armazena o ID do processo selecionado
+        processoSelecionado = processo.dataset.id;
+        
+        // Atualiza a seção de parecer
+        const req = JSON.parse(localStorage.getItem('requerimentos'))
+            .find(r => r.id == processoSelecionado);
+        
+        conteudoProcessoSelecionado.innerHTML = `
+            <p><strong>Aluno:</strong> ${req.aluno} (${req.matricula})</p>
+            <p><strong>Protocolo:</strong> ${req.id}</p>
+            <p><strong>Data:</strong> ${new Date(req.data).toLocaleString()}</p>
+            <p><strong>Encaminhado por:</strong> ${req.historico.find(h => h.acao === 'encaminhado').por}</p>
+            <hr>
+            ${req.conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
+            <hr>
+            <p><strong>Histórico:</strong></p>
+            <ul class="historico">
+                ${req.historico.map(item => `
+                    <li>${item.acao.toUpperCase()} - ${new Date(item.data).toLocaleString()}</li>
+                `).join('')}
+            </ul>
+        `;
+        
+        secaoParecer.classList.add('com-processo-selecionado');
     }
 
     // Função para desselecionar processo
@@ -110,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         processoSelecionado = null;
         conteudoProcessoSelecionado.innerHTML = '<p vazio>Nenhum processo selecionado</p>';
         secaoParecer.classList.remove('com-processo-selecionado');
+        seletorOpcoes.value = '';
     }
 
     // Desselecionar processo
@@ -165,6 +194,25 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('matriculaAluno');
         window.location.href = '../HTML/index.html';
     });
+
+    // Adicionar estilos CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        .nenhum-processo {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+        .historico {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        .historico li {
+            margin-bottom: 5px;
+        }
+    `;
+    document.head.appendChild(style);
 
     // Carregar requerimentos ao iniciar
     carregarRequerimentosEncaminhados();
