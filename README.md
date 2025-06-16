@@ -12,7 +12,7 @@ Se quiser ler mais sobre, visite a [wiki](https://github.com/Raccoonvoor/Faculan
     - [x] Modal do requerimento.
     - [x] Modal de edição do requerimento.
     - [x] Modal do comprovante.
-- [ ] Criação do back-end.
+- [x] Criação do back-end.
     - [x] Acessos para login. (feito através de matrícula nos intervalos 10-40, 41-70, 71-99)
     - [x] Funcinalidades da tela do aluno.
     - [x] Funcinalidades da tela dos funcionários.
