@@ -1,11 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
-
-    // as constantes que tão puxando do id dos html.
     const btnSair = document.getElementById('btnSair');
     const modalRequerimento = document.getElementById('modalRequerimento');
     const seletorOpcoes = document.getElementById('seletorOpcoes');
     const btnEncaminhar = document.getElementById('btnEncaminhar');
 
+    // Pega o nome do usuário salvo no login.
+    const nomeAluno = localStorage.getItem('nomeAluno');
+    if (nomeAluno) {
+        const elementoNome = document.querySelector('.user-name');
+        if (elementoNome) {
+            elementoNome.textContent = nomeAluno;
+        }
+    }
 
     function fecharModal() {
         if (modalRequerimento) {
@@ -17,14 +23,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // botão de sair que é padrão pra todos, então só chamar ele que tá safe
+    // Botão Sair - Corrigido com caminho absoluto e verificação.
     if (btnSair) {
         btnSair.addEventListener('click', function() {
-            window.location.href = 'index.html';
+            localStorage.removeItem('nomeAluno');
+            window.location.href = '../HTML/index.html';
+            
+            // Debug (Pode remover isso daqui se precisar Thiago).
+            console.log('Botão sair clicado - redirecionando...');
         });
     }
 
-    // Aqui tá a maioria das coisas lá do modal, também deixei as constantes fixas aqui pra ter um controle melhor e porque o modal específico de abrir um requerimento, é só do acesso do aluno, então não tinha a necessidade de pôr em outro canto.
+    // Controle do modal de requerimentos.
     if (modalRequerimento) {
         const btnNovoRequerimento = document.getElementById('btnNovoRequerimento');
         const btnCancelar = document.getElementById('btnCancelar');
@@ -60,8 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // aquela barra lá na página da secretaria
-    // ainda falta adicionar a lógica das áreas específicas, mas dá pra reaproveitar.
+    // Lógica da secretaria.
     if (seletorOpcoes && btnEncaminhar) {
         seletorOpcoes.addEventListener('change', function() {
             console.log('Opção selecionada:', this.value);

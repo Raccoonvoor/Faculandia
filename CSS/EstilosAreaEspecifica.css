@@ -1,0 +1,61 @@
+@import url('estilos-base.css');
+
+/* Área dos burocratas */
+.processo {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.btn-processo {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: 15px;
+}
+
+/* Seção de parecer */
+#conteudoProcessoSelecionado {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+    border: 1px solid #dee2e6;
+    min-height: 100px;
+}
+
+.seletor {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.btn-encaminhar {
+    background-color: #003366;
+    color: white;
+    padding: 10px 20px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .processo {
+        flex-direction: column;
+    }
+    
+    .btn-processo {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+}
