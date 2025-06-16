@@ -4,23 +4,23 @@ Se quiser ler mais sobre, visite a [wiki](https://github.com/Raccoonvoor/Faculan
 
 ### Organização (sujeito à mudanças):
 
-- [ ] Criação do front-end.
-    - [ ] Tela de login.
-    - [ ] Tela do aluno.
-    - [ ] Tela dos funcionários.
-    - [ ] Tela das áreas específicas.
-    - [ ] Modal do requerimento.
-    - [ ] Modal de edição do requerimento.
-    - [ ] Modal do comprovante.
+- [x] Criação do front-end.
+    - [x] Tela de login.
+    - [x] Tela do aluno.
+    - [x] Tela dos funcionários.
+    - [x] Tela das áreas específicas.
+    - [x] Modal do requerimento.
+    - [x] Modal de edição do requerimento.
+    - [x] Modal do comprovante.
 - [ ] Criação do back-end.
     - [x] Acessos para login. (feito através de matrícula nos intervalos 10-40, 41-70, 71-99)
-    - [ ] Funcinalidades da tela do aluno.
-    - [ ] Funcinalidades da tela dos funcionários.
-    - [ ] Funcinalidades da tela das áreas específicas.
-    - [ ] Criação e instanciação do requerimento.
-    - [ ] Edição e atualização do requerimento.
-    - [ ] Download do requerimento.
-- [ ] Criação do banco de dados.
-    - [ ] Persistência dos acessos.
-    - [ ] Comprovantes.
-    - [ ] Id dos protocolos.
+    - [x] Funcinalidades da tela do aluno.
+    - [x] Funcinalidades da tela dos funcionários.
+    - [x] Funcinalidades da tela das áreas específicas.
+    - [x] Criação e instanciação do requerimento.
+    - [x] Edição e atualização do requerimento.
+    - [x] Download do requerimento.
+- [x] Criação do banco de dados.
+    - [x] Persistência dos acessos.
+    - [x] Comprovantes.
+    - [x] Id dos protocolos.
