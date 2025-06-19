@@ -19,22 +19,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const listaRequerimentos = document.getElementById('listaRequerimentos');
     const detalhesRequerimentoContainer = document.getElementById('detalhesRequerimentoContainer');
 
-    // Variável do requerimento que tá atualmente.
     let requerimentoAtualId = null;
 
-    // Mostrar oo nome do cara.
     if (nomeUsuario) {
         document.getElementById('nomeUsuario').textContent = nomeUsuario;
     }
 
-    // Botão de sair.
     btnSair.addEventListener('click', function() {
         localStorage.removeItem('nomeAluno');
         localStorage.removeItem('matriculaAluno');
         window.location.href = '../HTML/index.html';
     });
 
-    // Novo Requerimento.
     btnNovoRequerimento.addEventListener('click', mostrarEditorRequerimento);
     btnNovoRequerimentoLista.addEventListener('click', mostrarEditorRequerimento);
 
@@ -45,12 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Cancelar novo requerimento.
     btnCancelarRequerimento.addEventListener('click', function() {
         novoRequerimentoSection.style.display = 'none';
     });
 
-    // Enviar novo requerimento.
     btnEnviarRequerimento.addEventListener('click', function() {
         const texto = textoNovoRequerimento.value.trim();
         
@@ -62,78 +56,90 @@ document.addEventListener('DOMContentLoaded', function() {
         enviarRequerimento(texto);
     });
 
-    // Função para enviar requerimento.
-    function enviarRequerimento(texto) {
+    async function enviarRequerimento(texto) {
         const nomeAluno = localStorage.getItem('nomeAluno');
         const matriculaAluno = localStorage.getItem('matriculaAluno');
         
-        const requerimento = {
-            id: Date.now(),
-            conteudo: texto,
-            aluno: nomeAluno,
-            matricula: matriculaAluno,
-            data: new Date().toISOString(),
-            status: 'enviado',
-            historico: [{
-                acao: 'enviado',
-                data: new Date().toISOString(),
-                por: nomeAluno,
-                descricao: 'Requerimento enviado pelo aluno'
-            }]
-        };
-        
-        // Armazenar no localStorage.
-        let requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
-        requerimentos.push(requerimento);
-        localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
-        
-        // Atualizar a visualização.
-        carregarListaRequerimentos();
-        mostrarDetalhesRequerimento(requerimento.id);
-        novoRequerimentoSection.style.display = 'none';
-        alert(`Requerimento enviado com sucesso! Protocolo: ${requerimento.id}`);
+        try {
+            const response = await fetch('http://localhost:3000/requerimentos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    conteudo: texto,
+                    aluno: nomeAluno,
+                    matricula: matriculaAluno,
+                    status: 'enviado',
+                    historico: [{
+                        acao: 'enviado',
+                        data: new Date().toISOString(),
+                        por: nomeAluno,
+                        descricao: 'Requerimento enviado pelo aluno'
+                    }]
+                })
+            });
+
+            if (!response.ok) throw new Error('Erro ao enviar requerimento');
+
+            const requerimento = await response.json();
+            
+            carregarListaRequerimentos();
+            mostrarDetalhesRequerimento(requerimento.id);
+            novoRequerimentoSection.style.display = 'none';
+            alert(`Requerimento enviado com sucesso! Protocolo: ${requerimento.id}`);
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao enviar requerimento. Por favor, tente novamente.');
+        }
     }
 
-    // Função para carregar a lista de requerimentos.
-    function carregarListaRequerimentos() {
+    async function carregarListaRequerimentos() {
         const matriculaAluno = localStorage.getItem('matriculaAluno');
-        const requerimentos = JSON.parse(localStorage.getItem('requerimentos')) || [];
-        const requerimentosAluno = requerimentos.filter(r => r.matricula === matriculaAluno);
         
-        listaRequerimentos.innerHTML = '';
-        
-        if (requerimentosAluno.length === 0) {
-            listaRequerimentos.innerHTML = '<p class="nenhum-requerimento">Nenhum requerimento encontrado.</p>';
-            detalhesRequerimentoContainer.style.display = 'none';
-            return;
-        }
-        
-        // Ordena do mais recente para o mais antigo.
-        requerimentosAluno.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(req => {
-            const item = document.createElement('div');
-            item.className = 'item-requerimento';
-            item.dataset.id = req.id;
+        try {
+            const response = await fetch(`http://localhost:3000/requerimentos/${matriculaAluno}`);
+            if (!response.ok) throw new Error('Erro ao carregar requerimentos');
             
-            const ultimoStatus = req.historico[req.historico.length - 1]?.acao || 'enviado';
-            const statusClass = getStatusClass(ultimoStatus);
+            const requerimentos = await response.json();
             
-            item.innerHTML = `
-                <div class="requerimento-resumo ${statusClass}">
-                    <div class="requerimento-id">#${req.id}</div>
-                    <div class="requerimento-data">${new Date(req.data).toLocaleDateString()}</div>
-                    <div class="requerimento-status ${statusClass}">${formatStatus(ultimoStatus)}</div>
-                </div>
-            `;
+            listaRequerimentos.innerHTML = '';
             
-            item.addEventListener('click', () => mostrarDetalhesRequerimento(req.id));
-            listaRequerimentos.appendChild(item);
-        });
-        if (requerimentosAluno.length > 0) {
-            mostrarDetalhesRequerimento(requerimentosAluno[0].id);
+            if (requerimentos.length === 0) {
+                listaRequerimentos.innerHTML = '<p class="nenhum-requerimento">Nenhum requerimento encontrado.</p>';
+                detalhesRequerimentoContainer.style.display = 'none';
+                return;
+            }
+            
+            requerimentos.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(req => {
+                const item = document.createElement('div');
+                item.className = 'item-requerimento';
+                item.dataset.id = req.id;
+                
+                const ultimoStatus = req.historico[req.historico.length - 1]?.acao || 'enviado';
+                const statusClass = getStatusClass(ultimoStatus);
+                
+                item.innerHTML = `
+                    <div class="requerimento-resumo ${statusClass}">
+                        <div class="requerimento-id">#${req.id}</div>
+                        <div class="requerimento-data">${new Date(req.data).toLocaleDateString()}</div>
+                        <div class="requerimento-status ${statusClass}">${formatStatus(ultimoStatus)}</div>
+                    </div>
+                `;
+                
+                item.addEventListener('click', () => mostrarDetalhesRequerimento(req.id));
+                listaRequerimentos.appendChild(item);
+            });
+            
+            if (requerimentos.length > 0) {
+                mostrarDetalhesRequerimento(requerimentos[0].id);
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            listaRequerimentos.innerHTML = '<p class="erro-carregamento">Erro ao carregar requerimentos</p>';
         }
     }
 
-    // Funções auxiliares para status.
     function getStatusClass(status) {
         switch(status) {
             case 'enviado': return 'status-enviado';
@@ -154,33 +160,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Função para mostrar detalhes do requerimento.
-    function mostrarDetalhesRequerimento(id) {
+    async function mostrarDetalhesRequerimento(id) {
         requerimentoAtualId = id;
-        const requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
-        const requerimento = requerimentos.find(r => r.id == id);
         
-        if (!requerimento) return;
-        btnEditarRequerimento.style.display = (requerimento.status === 'enviado' || requerimento.status === 'editado') ? 'block' : 'none';
-        descricaoConteudo.innerHTML = requerimento.conteudo.split('\n')
-            .filter(p => p.trim() !== '')
-            .map(p => `<p>${p}</p>`)
-            .join('');
-        atualizarStatusRequerimento(requerimento);
-        
-
-        atualizarRespostas(requerimento);
-        
-
-        document.querySelectorAll('.item-requerimento').forEach(item => {
-            item.classList.toggle('selecionado', item.dataset.id == id);
-        });
-        
-
-        detalhesRequerimentoContainer.style.display = 'block';
+        try {
+            const response = await fetch(`http://localhost:3000/requerimentos/${localStorage.getItem('matriculaAluno')}`);
+            if (!response.ok) throw new Error('Erro ao carregar detalhes');
+            
+            const requerimentos = await response.json();
+            const requerimento = requerimentos.find(r => r.id == id);
+            
+            if (!requerimento) return;
+            
+            btnEditarRequerimento.style.display = (requerimento.status === 'enviado' || requerimento.status === 'editado') ? 'block' : 'none';
+            descricaoConteudo.innerHTML = requerimento.conteudo.split('\n')
+                .filter(p => p.trim() !== '')
+                .map(p => `<p>${p}</p>`)
+                .join('');
+            atualizarStatusRequerimento(requerimento);
+            atualizarRespostas(requerimento);
+            
+            document.querySelectorAll('.item-requerimento').forEach(item => {
+                item.classList.toggle('selecionado', item.dataset.id == id);
+            });
+            
+            detalhesRequerimentoContainer.style.display = 'block';
+        } catch (error) {
+            console.error('Erro:', error);
+        }
     }
 
-    // Função para atualizar o status do requerimento.
     function atualizarStatusRequerimento(requerimento) {
         let statusHTML = `<h3>STATUS</h3>`;
         
@@ -212,7 +221,6 @@ document.addEventListener('DOMContentLoaded', function() {
         statusBox.innerHTML = statusHTML;
     }
 
-    // Função para atualizar as respostas.
     function atualizarRespostas(requerimento) {
         const respostas = requerimento.historico.filter(item => 
             item.acao === 'processado' && item.parecer
@@ -251,26 +259,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Editar Requerimento.
     btnEditarRequerimento.addEventListener('click', function() {
-        const requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
-        const requerimento = requerimentos.find(r => r.id == requerimentoAtualId);
-        
-        if (requerimento) {
-            textoRequerimentoEditado.value = requerimento.conteudo;
-            modalEdicao.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            textoRequerimentoEditado.focus();
-        }
+        fetch(`http://localhost:3000/requerimentos/${localStorage.getItem('matriculaAluno')}`)
+            .then(response => response.json())
+            .then(requerimentos => {
+                const requerimento = requerimentos.find(r => r.id == requerimentoAtualId);
+                if (requerimento) {
+                    textoRequerimentoEditado.value = requerimento.conteudo;
+                    modalEdicao.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                    textoRequerimentoEditado.focus();
+                }
+            })
+            .catch(error => console.error('Erro:', error));
     });
 
-    // Cancelar edição.
     btnCancelarEdicao.addEventListener('click', function() {
         modalEdicao.style.display = 'none';
         document.body.style.overflow = 'auto';
     });
 
-    // Salvar edição.
     btnSalvarEdicao.addEventListener('click', function() {
         const novoTexto = textoRequerimentoEditado.value.trim();
         
@@ -279,41 +287,41 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        let requerimentos = JSON.parse(localStorage.getItem('requerimentos'));
-        const reqIndex = requerimentos.findIndex(r => r.id == requerimentoAtualId);
-        
-        if (reqIndex !== -1) {
-            if (requerimentos[reqIndex].status !== 'enviado' && 
-                requerimentos[reqIndex].status !== 'editado') {
-                alert('Este requerimento já foi processado e não pode mais ser editado.');
-                modalEdicao.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                return;
-            }
-
-            requerimentos[reqIndex].conteudo = novoTexto;
-            requerimentos[reqIndex].status = 'editado';
-            requerimentos[reqIndex].historico.push({
-                acao: 'editado',
-                data: new Date().toISOString(),
-                por: localStorage.getItem('nomeAluno'),
-                descricao: 'Requerimento editado pelo aluno'
-            });
-            
-            localStorage.setItem('requerimentos', JSON.stringify(requerimentos));
-            
-            // Atualiza a visualização.
+        fetch(`http://localhost:3000/requerimentos/${requerimentoAtualId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                conteudo: novoTexto,
+                status: 'editado',
+                $push: {
+                    historico: {
+                        acao: 'editado',
+                        data: new Date().toISOString(),
+                        por: localStorage.getItem('nomeAluno'),
+                        descricao: 'Requerimento editado pelo aluno'
+                    }
+                }
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erro ao atualizar requerimento');
+            return response.json();
+        })
+        .then(() => {
             carregarListaRequerimentos();
             mostrarDetalhesRequerimento(requerimentoAtualId);
             modalEdicao.style.display = 'none';
             document.body.style.overflow = 'auto';
             alert('Requerimento atualizado com sucesso!');
-        } else {
-            alert('Erro: Requerimento não encontrado.');
-        }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao atualizar requerimento. Por favor, tente novamente.');
+        });
     });
 
-    // Fechar modal ao clicar fora.
     window.addEventListener('click', function(event) {
         if (event.target === modalEdicao) {
             modalEdicao.style.display = 'none';
