@@ -24,3 +24,10 @@ Se quiser ler mais sobre, visite a [wiki](https://github.com/Raccoonvoor/Faculan
     - [x] Persistência dos acessos.
     - [x] Comprovantes.
     - [x] Id dos protocolos.
+
+---
+
+![image](https://github.com/user-attachments/assets/0d0a88f8-a931-440a-921b-f88d25b3eccf)
+![image](https://github.com/user-attachments/assets/08915a33-b3bb-43bb-901a-46e80c6b3fa2)
+![image](https://github.com/user-attachments/assets/59ebd52b-112d-4389-9f01-4348772690ee)
+![image](https://github.com/user-attachments/assets/71ccdf75-dff6-4bac-86c6-ba2937eab908)
